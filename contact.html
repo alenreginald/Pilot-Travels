@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — Pilot Travels</title>
+  <meta name="description" content="Contact Pilot Travels — WhatsApp, phone, email and contact form. Owner-updated map preview." />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f5fbff;
+      --card:#ffffff;
+      --muted:#60737f;
+      --text:#072033;
+      --accent:#0b63a5;
+      --accent-2:#0b9bd8;
+      --glass: rgba(11,99,165,0.06);
+      --radius:14px;
+      --shadow-lg: 0 26px 60px rgba(6,20,40,0.08);
+      --shadow-sm: 0 8px 20px rgba(6,20,40,0.06);
+      --container:1100px;
+      --input-h:52px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+    a{color:var(--accent);text-decoration:none}
+    .wrap{max-width:var(--container);margin:28px auto;padding:22px}
+
+    /* HERO */
+    .hero{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:26px;border-radius:16px;background:linear-gradient(180deg,#fff,#f3f9ff);box-shadow:var(--shadow-lg)}
+    .hero h1{font-family:Poppins;margin:0;font-size:28px}
+    .lead{margin:8px 0 0;color:var(--muted);max-width:60ch}
+    .cta-row{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
+
+    /* GRID */
+    .layout{display:grid;grid-template-columns:1fr 420px;gap:18px;margin-top:18px;align-items:start}
+    @media (max-width:980px){ .layout{grid-template-columns:1fr} }
+
+    /* CARD */
+    .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:var(--shadow-sm)}
+    h2,h3{margin:0 0 8px 0}
+    .muted{color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* INPUTS: clean, large, elegant */
+    form{margin-top:6px}
+    .field{margin-top:12px;position:relative}
+    label{display:block;font-weight:700;margin-bottom:8px}
+    .control{
+      height:var(--input-h);
+      border-radius:12px;
+      padding:10px 14px;
+      border:1px solid rgba(6,20,40,0.06);
+      background:linear-gradient(180deg,#fff,#fbfeff);
+      box-shadow:0 6px 18px rgba(11,99,165,0.02);
+      font-size:15px;
+      color:var(--text);
+      width:100%;
+    }
+    .control:focus{
+      outline:0;
+      box-shadow:0 14px 36px rgba(11,99,165,0.10);
+      border-color:rgba(11,99,165,0.16);
+    }
+    textarea.control{height:140px;padding-top:12px;resize:vertical}
+
+    /* helper row (quick templates, char counter, file preview) */
+    .helper-row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+    .tpl{background:linear-gradient(90deg,#eef8ff,#f7fdff);border:1px solid rgba(11,99,165,0.04);padding:8px 10px;border-radius:999px;font-weight:700;cursor:pointer}
+    .tpl:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(11,99,165,0.04)}
+    .counter{margin-left:auto;font-size:13px;color:var(--muted)}
+
+    /* attachment preview */
+    .attachments{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    .att-thumb{width:72px;height:72px;border-radius:10px;object-fit:cover;border:1px solid rgba(6,20,40,0.04);background:#fff}
+
+    /* actions */
+    .form-actions{display:flex;gap:10px;align-items:center;margin-top:14px}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:12px 16px;border-radius:12px;border:0;font-weight:800;cursor:pointer;box-shadow:0 12px 30px rgba(11,99,165,0.12)}
+    .btn-ghost{background:transparent;border:1px solid rgba(6,20,40,0.06);padding:10px 12px;border-radius:12px;cursor:pointer}
+    .muted-right{margin-left:auto;color:var(--muted);font-size:13px}
+
+    /* contact details */
+    .contact-list{display:flex;flex-direction:column;gap:14px;margin-top:10px}
+    .contact-item{display:flex;gap:12px;align-items:flex-start}
+    .info-block{padding:10px;border-radius:12px;background:linear-gradient(180deg,#fff,#f6fbff);border:1px solid rgba(6,20,40,0.03)}
+
+    /* map preview */
+    .map-preview{border-radius:12px;overflow:hidden;border:1px solid rgba(6,20,40,0.04);margin-top:12px;height:240px}
+    .map-placeholder{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:15px;background:linear-gradient(180deg,#fff,#f6fbff)}
+
+    footer{margin-top:16px;color:var(--muted);text-align:center;font-size:13px}
+
+    /* small screen tweaks */
+    @media(max-width:560px){
+      .layout{grid-template-columns:1fr}
+      .map-preview{height:200px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- START: SHARED NAV (paste this immediately after <body>, replacing any existing <header> ... </header>) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+<header id="site-header" aria-label="Primary navigation">
+  <div class="nav-wrap">
+    <div class="brand">
+      <div class="logo">PT</div>
+      <div class="site-text">
+        <div class="site-title">Pilot Travels</div>
+        <div class="site-sub">Nagercoil · Kanyakumari</div>
+      </div>
+    </div>
+
+    <button id="nav-toggle" aria-expanded="false" aria-label="Open menu" class="nav-toggle">☰</button>
+
+    <nav id="main-nav" class="main-nav" aria-label="Main">
+      <a href="home.html" data-nav="home" class="nav-link"><span class="label">Home</span></a>
+      <a href="about.html" data-nav="about" class="nav-link"><span class="label">About</span></a>
+      <a href="bookcars.html" data-nav="bookcars" class="nav-link"><span class="label">Book Cars</span></a>
+      <a href="services.html" data-nav="services" class="nav-link"><span class="label">Services</span></a>
+      <a href="gallery.html" data-nav="gallery" class="nav-link"><span class="label">Gallery</span></a>
+      <a href="contact.html" data-nav="contact" class="nav-link"><span class="label">Contact</span></a>
+
+      <!-- sliding indicator -->
+      <div id="nav-indicator" aria-hidden="true"></div>
+    </nav>
+
+    <div class="nav-actions">
+      <button id="login-btn" class="btn-cta">Login / Book</button>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Compact header styles — Poppins used for labels */
+  :root{
+    --accent:#0b63a5; --accent2:#0b9bd8; --muted:#56646c; --white:#fff;
+    --glass: rgba(11,99,165,0.06); --shadow: 0 14px 40px rgba(6,20,40,0.08);
+  }
+  #site-header{position:sticky;top:0;z-index:1200;background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.94));backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,0.04)}
+  .nav-wrap{max-width:1200px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:var(--white);font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;box-shadow:0 8px 24px rgba(11,99,165,0.12)}
+  .site-title{font-family:'Poppins',sans-serif;font-weight:700}
+  .site-sub{font-size:13px;color:var(--muted)}
+
+  /* nav */
+  .main-nav{display:flex;gap:8px;align-items:center;position:relative;padding:6px}
+  .nav-link{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--muted);text-decoration:none;font-family:'Poppins',sans-serif;font-weight:600;transition:all .16s}
+  .nav-link:hover{background:var(--glass);transform:translateY(-3px);color:#052233}
+  .nav-link.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--white) !important;box-shadow:var(--shadow);transform:none}
+  #nav-indicator{position:absolute;bottom:-8px;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:left .22s ease,width .22s ease;box-shadow:0 10px 30px rgba(11,99,165,0.14);pointer-events:none}
+
+  /* actions */
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .btn-cta{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--white);padding:9px 12px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+
+  /* mobile */
+  .nav-toggle{display:none;background:transparent;border:0;font-size:20px;padding:8px;cursor:pointer}
+  @media (max-width:880px){
+    .nav-wrap{padding:10px}
+    .main-nav{position:fixed;left:8px;right:8px;top:72px;background:rgba(255,255,255,0.98);flex-direction:column;gap:6px;padding:12px;border-radius:10px;box-shadow:0 14px 30px rgba(6,20,40,0.06);transform:translateY(-8px);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s}
+    .main-nav.open{opacity:1;transform:translateY(0);pointer-events:auto}
+    .nav-toggle{display:inline-flex}
+    #nav-indicator{display:none}
+    .nav-link{width:calc(100% - 28px)}
+    .nav-actions{display:flex}
+  }
+
+  /* accessibility focus */
+  .nav-link:focus{outline:0;box-shadow:0 0 0 6px rgba(11,99,165,0.12)}
+</style>
+
+<script>
+(function(){
+  const nav = document.getElementById('main-nav');
+  const links = Array.from(nav.querySelectorAll('.nav-link'));
+  const indicator = document.getElementById('nav-indicator');
+  const toggle = document.getElementById('nav-toggle');
+  const loginBtn = document.getElementById('login-btn');
+
+  // Determine and set active link by current file or hash
+  function setActiveByLocation(){
+    const filename = (location.pathname || '').split('/').pop().toLowerCase() || 'home.html';
+    const fileBase = filename.replace(/\.html$/,'');
+    const hash = (location.hash || '').replace('#','').toLowerCase();
+
+    // clear
+    links.forEach(a => { a.classList.remove('active'); a.removeAttribute('aria-current'); });
+
+    // match by href filename
+    let match = links.find(a => {
+      const href = (a.getAttribute('href')||'').split('/').pop().toLowerCase();
+      if(!href) return false;
+      if(href === filename) return true;
+      if(href.replace(/\.html$/,'') === fileBase) return true;
+      return false;
+    });
+
+    // if hash present, prefer matching data-nav or hash target
+    if(hash){
+      const hashMatch = links.find(a => (a.dataset && a.dataset.nav && a.dataset.nav.toLowerCase() === hash) || ((a.getAttribute('href')||'').split('#').pop().toLowerCase() === hash));
+      if(hashMatch) match = hashMatch;
+    }
+
+    if(!match) match = links[0];
+    if(match){
+      match.classList.add('active');
+      match.setAttribute('aria-current','page');
+      moveIndicator(match);
+    }
+  }
+
+  // Move sliding indicator under element
+  function moveIndicator(el){
+    if(!indicator) return;
+    const r = el.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+    const left = r.left - navRect.left;
+    const width = r.width;
+    indicator.style.left = (left + 8) + 'px';
+    indicator.style.width = (width - 16) + 'px';
+  }
+
+  // Click behavior: for links to same-page anchors (#id) do smooth scroll
+  links.forEach(a => {
+    a.addEventListener('click', function(e){
+      // close mobile nav if open
+      if(nav.classList.contains('open')){ nav.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
+
+      // smooth-scroll if link contains a hash pointing to element on same page
+      const href = a.getAttribute('href') || '';
+      if(href.startsWith('#')){
+        e.preventDefault();
+        const id = href.slice(1);
+        const el = document.getElementById(id);
+        if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+        // set active visually
+        links.forEach(x => x.classList.remove('active'));
+        a.classList.add('active');
+        a.setAttribute('aria-current','page');
+        return;
+      }
+      // otherwise allow default (navigate or your injector will handle)
+    });
+
+    // keyboard activation
+    a.addEventListener('keydown', (ev) => { if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); a.click(); } });
+  });
+
+  // toggle mobile menu
+  toggle && toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  // ensure indicator repositions on resize/scroll
+  let t;
+  window.addEventListener('resize', ()=>{ clearTimeout(t); t=setTimeout(()=> { const active = nav.querySelector('.nav-link.active'); if(active) moveIndicator(active); }, 100); });
+  window.addEventListener('scroll', ()=> { const active = nav.querySelector('.nav-link.active'); if(active) moveIndicator(active); }, { passive:true });
+
+  // login button goes to booking page
+  loginBtn && loginBtn.addEventListener('click', ()=> { location.href = 'customer.html'; });
+
+  // initial set
+  setActiveByLocation();
+
+  // respond to history/hash changes
+  window.addEventListener('popstate', setActiveByLocation);
+  window.addEventListener('hashchange', setActiveByLocation);
+
+  // Expose hook for page scripts (optional): window.onNavReady = function(){ ... }
+  window.onNavReady = function(){ setActiveByLocation(); };
+
+  // SAFETY: prevent negative distance inputs anywhere on site
+  (function clampDistanceInputs(){
+    try{
+      const binds = (selector) => {
+        const els = Array.from(document.querySelectorAll(selector));
+        els.forEach(d => {
+          d.setAttribute('min', '0');
+          d.addEventListener('input', ()=> { if(Number(d.value) < 0) d.value = 0; });
+        });
+      };
+      // common id used in your pages
+      binds('#distance');
+      // also clamp any inputs that have data-distance attribute
+      binds('input[data-distance]');
+    }catch(e){ /* ignore */ }
+  })();
+
+})();
+</script>
+<!-- END: SHARED NAV -->
+
+
+
+
+  <main class="wrap" role="main" aria-labelledby="pageTitle">
+    <header class="hero" role="banner">
+      <div>
+        <h1 id="pageTitle">Contact & Support — Pilot Travels</h1>
+        <p class="lead">Quickly message us about bookings, trip plans, or vehicle requests. Prefer WhatsApp? Use the Chat button for immediate replies.</p>
+
+        <div class="cta-row" aria-hidden="false">
+          <button id="bookBtn" class="btn" aria-label="Book Now">Book Now</button>
+          <a href="https://wa.me/919488336297" class="btn-ghost" target="_blank" rel="noopener">Chat on WhatsApp</a>
+        </div>
+      </div>
+
+      <div style="min-width:220px">
+        <div class="card" aria-hidden="false" style="text-align:left">
+          <div style="font-weight:800">Need immediate help?</div>
+          <div class="small muted" style="margin-top:8px">Call or WhatsApp — 24/7 support</div>
+          <div style="margin-top:10px;font-weight:800"><a href="tel:+919488336297">+91 94883 6297</a></div>
+          <div style="margin-top:10px"><a class="btn-ghost" href="mailto:pilottravels74@gmail.com">Email Us</a></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout" aria-live="polite">
+      <!-- left: form -->
+      <section>
+        <article class="card" aria-labelledby="formHeading">
+          <h2 id="formHeading">Send a message</h2>
+          <p class="small muted">Fill a few details and we'll reach you via WhatsApp or phone. Messages are saved locally for demo purposes.</p>
+
+          <form id="contactForm" novalidate autocomplete="on" style="margin-top:12px">
+            <!-- Honeypot to reduce bot spam (hidden) -->
+            <input type="text" id="hp_field" name="hp_field" style="position:absolute;left:-9999px;top:auto;opacity:0" tabindex="-1" autocomplete="off">
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <div style="flex:1;min-width:200px">
+                <label for="name">Full name</label>
+                <input id="name" class="control" name="name" placeholder="Your full name" required aria-required="true">
+              </div>
+
+              <div style="width:220px">
+                <label for="phone">Phone</label>
+                <input id="phone" class="control" name="phone" placeholder="e.g. 94883 6297" inputmode="tel" required aria-required="true">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="email">Email (optional)</label>
+              <input id="email" class="control" name="email" type="email" placeholder="you@example.com" autocomplete="email">
+            </div>
+
+            <div class="field">
+              <label for="subject">Subject</label>
+              <input id="subject" class="control" name="subject" placeholder="Booking / Support / Custom trip">
+            </div>
+
+            <div class="field">
+              <label for="message">Message</label>
+              <textarea id="message" class="control" name="message" placeholder="Tell us pickup, drop, dates and any preferences" required aria-required="true"></textarea>
+
+              <div class="helper-row">
+                <div style="display:flex;gap:8px;align-items:center">
+                  <button type="button" class="tpl" data-template="Hi, I want a car for local travel on {date}.">Local trip</button>
+                  <button type="button" class="tpl" data-template="Hi, please call me to discuss an outstation tour for {days} days.">Outstation</button>
+                  <button type="button" class="tpl" data-template="Need airport transfer on {date}">Airport transfer</button>
+                </div>
+                <div class="counter" id="msgCount">0 / 1000</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="attachments">Attachments (optional)</label>
+              <input id="attachments" type="file" accept="image/*,application/pdf" multiple style="display:block">
+              <div class="attachments" id="attachPreview" aria-live="polite"></div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn" id="sendBtn">Send message</button>
+              <button type="button" class="btn-ghost" id="mailtoBtn">Open email client</button>
+              <div class="muted-right" id="eta">Typical reply time: <strong>~1 hour</strong></div>
+            </div>
+
+            <div id="formFeedback" class="small muted" style="margin-top:10px"></div>
+          </form>
+        </article>
+
+        <article class="card" style="margin-top:14px">
+          <h3 style="margin:0">Office & Support</h3>
+          <p class="small muted" style="margin-top:8px">Support: 24/7 — Office hours: Mon–Sun 6:00 AM — 11:00 PM</p>
+          <p class="small muted" style="margin-top:6px">Address: Pilot Travels, Nagercoil, Kanyakumari District</p>
+        </article>
+      </section>
+
+      <!-- right: contact + map -->
+      <aside>
+        <div class="card" aria-labelledby="detailsHeading">
+          <h3 id="detailsHeading" style="margin:0">Contact details</h3>
+
+          <div class="contact-list">
+            <div class="contact-item">
+              <div class="info-block" style="width:100%">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <div style="font-weight:800">Phone</div>
+                    <div class="small muted" style="margin-top:6px"><a href="tel:+919488336297">+91 94883 6297</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="info-block" style="width:100%">
+                <div style="font-weight:800">Email</div>
+                <div class="small muted" style="margin-top:6px"><a href="mailto:pilottravels74@gmail.com">pilottravels74@gmail.com</a></div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="info-block" style="width:100%">
+                <div style="font-weight:800">Location (owner-pinned)</div>
+                <div id="locCoords" class="small muted" style="margin-top:6px">No pinned location yet</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-preview" id="mapPreview" aria-live="polite">
+            <div class="map-placeholder" id="mapPlaceholder">No pinned location yet — owner can set location from the Owner panel.</div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <a id="openMapButton" class="btn-ghost" href="#" target="_blank" rel="noopener" aria-disabled="true" style="pointer-events:none">Open map</a>
+            <a class="btn-ghost" href="https://wa.me/919488336297" target="_blank" rel="noopener">WhatsApp</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>© Pilot Travels · Nagercoil · Kanyakumari District</footer>
+  </main>
+
+  <script>
+    /* Enhanced contact page JS
+       - Removed icons inside inputs (as requested)
+       - Message templates, autosave, attachments preview, phone formatting
+       - Map preview reads 'pilot_location' from localStorage
+    */
+
+    const PIN_KEY = 'pilot_location'; // owner panel uses same key
+    const mapPreview = document.getElementById('mapPreview');
+    const mapPlaceholder = document.getElementById('mapPlaceholder');
+    const openMapButton = document.getElementById('openMapButton');
+    const locCoords = document.getElementById('locCoords');
+
+    function osmEmbedUrl(lat, lng, zoom = 14){
+      const d = 0.02;
+      const minLon = (lng - d).toFixed(6);
+      const minLat = (lat - d).toFixed(6);
+      const maxLon = (lng + d).toFixed(6);
+      const maxLat = (lat + d).toFixed(6);
+      return `https://www.openstreetmap.org/export/embed.html?bbox=${minLon},${minLat},${maxLon},${maxLat}&layer=mapnik&marker=${lat},${lng}`;
+    }
+    function osmViewerUrl(lat,lng,zoom=14){
+      return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=${zoom}/${lat}/${lng}`;
+    }
+
+    function showPlaceholder(){
+      mapPreview.innerHTML = `<div class="map-placeholder" id="mapPlaceholder">No pinned location yet — owner can set location from the Owner panel.</div>`;
+      openMapButton.href = '#';
+      openMapButton.setAttribute('aria-disabled', 'true');
+      openMapButton.style.pointerEvents = 'none';
+      locCoords.textContent = 'No pinned location yet';
+    }
+
+    function renderPin(pin){
+      if(!pin || typeof pin.lat === 'undefined' || typeof pin.lng === 'undefined'){
+        showPlaceholder(); return;
+      }
+      const lat = Number(pin.lat), lng = Number(pin.lng);
+      const embed = osmEmbedUrl(lat,lng, pin.zoom || 14);
+      mapPreview.innerHTML = `<iframe title="Pilot Travels location preview" src="${embed}" style="border:0;width:100%;height:100%"></iframe>`;
+      const viewer = pin.mapsLink && pin.mapsLink.trim() ? pin.mapsLink.trim() : osmViewerUrl(lat,lng,14);
+      openMapButton.href = viewer;
+      openMapButton.removeAttribute('aria-disabled');
+      openMapButton.style.pointerEvents = '';
+      locCoords.textContent = (pin.label ? pin.label + ' — ' : '') + `Lat: ${lat.toFixed(6)} • Lng: ${lng.toFixed(6)}`;
+    }
+
+    function loadPin(){
+      const raw = localStorage.getItem(PIN_KEY);
+      if(!raw){ showPlaceholder(); return; }
+      try{ const p = JSON.parse(raw); renderPin(p); } catch(e){ showPlaceholder(); }
+    }
+
+    // Listen for owner updates (BroadcastChannel + storage)
+    if(typeof BroadcastChannel !== 'undefined'){
+      try{
+        const bc = new BroadcastChannel('pilot_channel');
+        bc.onmessage = (ev) => { if(ev.data === 'pilot_location_updated' || ev.data === 'pilot_location') loadPin(); };
+      } catch(e){}
+    }
+    window.addEventListener('storage', (ev) => { if(ev.key === PIN_KEY || ev.key === 'pilot_loc_sync_ts') loadPin(); });
+
+    loadPin();
+
+    /* ---------------------------
+       Form UX enhancements
+       --------------------------- */
+    const form = document.getElementById('contactForm');
+    const nameEl = document.getElementById('name');
+    const phoneEl = document.getElementById('phone');
+    const emailEl = document.getElementById('email');
+    const subjectEl = document.getElementById('subject');
+    const messageEl = document.getElementById('message');
+    const msgCount = document.getElementById('msgCount');
+    const attachmentsEl = document.getElementById('attachments');
+    const attachPreview = document.getElementById('attachPreview');
+    const feedback = document.getElementById('formFeedback');
+    const HP = document.getElementById('hp_field'); // honeypot
+
+    // Quick templates
+    document.querySelectorAll('.tpl').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tpl = btn.dataset.template || '';
+        const today = new Date().toLocaleDateString();
+        const filled = tpl.replace('{date}', today).replace('{days}', '2');
+        messageEl.value = (messageEl.value ? (messageEl.value + '\n\n') : '') + filled;
+        updateCounter();
+        messageEl.focus();
+      });
+    });
+
+    // message counter (max 1000)
+    function updateCounter(){
+      const len = messageEl.value.length;
+      msgCount.textContent = `${len} / 1000`;
+      if(len > 900) msgCount.style.color = '#b23'; else msgCount.style.color = '';
+    }
+    messageEl.addEventListener('input', updateCounter);
+    updateCounter();
+
+    // Phone auto-format (basic, Indian friendly): on blur, format to +91 xxxxx xxxxx if 10 digits
+    phoneEl.addEventListener('blur', () => {
+      const raw = phoneEl.value.replace(/\D/g,'');
+      if(raw.length === 10){
+        phoneEl.value = '+91 ' + raw.slice(0,5) + ' ' + raw.slice(5);
+      } else if(raw.length === 12 && raw.startsWith('91')){
+        phoneEl.value = '+91 ' + raw.slice(2,7) + ' ' + raw.slice(7);
+      } // otherwise leave as-is
+    });
+
+    // Autosave draft (localStorage)
+    const DRAFT_KEY = 'contact_draft_v1';
+    function saveDraft(){
+      const draft = { name:nameEl.value, phone:phoneEl.value, email:emailEl.value, subject:subjectEl.value, message:messageEl.value, ts: Date.now() };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    }
+    function loadDraft(){
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if(!raw) return;
+      try{
+        const d = JSON.parse(raw);
+        if(d && d.ts && (Date.now() - d.ts) < 1000 * 60 * 60 * 24 * 7){ // keep 7 days
+          nameEl.value = d.name || '';
+          phoneEl.value = d.phone || '';
+          emailEl.value = d.email || '';
+          subjectEl.value = d.subject || '';
+          messageEl.value = d.message || '';
+          updateCounter();
+        } else {
+          localStorage.removeItem(DRAFT_KEY);
+        }
+      } catch(e){}
+    }
+    [nameEl, phoneEl, emailEl, subjectEl, messageEl].forEach(i => i.addEventListener('input', () => { saveDraft(); }));
+
+    // Attachments preview (client-side thumbnails, not uploaded)
+    attachmentsEl.addEventListener('change', (e) => {
+      attachPreview.innerHTML = '';
+      const files = Array.from(e.target.files || []);
+      files.slice(0,8).forEach(f => {
+        const el = document.createElement('div');
+        el.style.display = 'flex'; el.style.flexDirection='column'; el.style.alignItems='center';
+        if(f.type.startsWith('image/')){
+          const img = document.createElement('img');
+          img.className = 'att-thumb';
+          img.alt = f.name;
+          const reader = new FileReader();
+          reader.onload = () => img.src = reader.result;
+          reader.readAsDataURL(f);
+          el.appendChild(img);
+        } else {
+          const box = document.createElement('div');
+          box.className = 'att-thumb';
+          box.style.display='flex'; box.style.alignItems='center'; box.style.justifyContent='center';
+          box.textContent = 'PDF';
+          el.appendChild(box);
+        }
+        const lbl = document.createElement('div');
+        lbl.style.fontSize='12px'; lbl.style.marginTop='6px'; lbl.style.maxWidth='72px'; lbl.style.textAlign='center'; lbl.textContent = f.name.length>12 ? f.name.slice(0,12)+'…' : f.name;
+        el.appendChild(lbl);
+        attachPreview.appendChild(el);
+      });
+    });
+
+    // Feedback / local store of contact messages
+    function saveContactLocally(obj){
+      const KEY = 'pilot_contacts_v1';
+      const arr = JSON.parse(localStorage.getItem(KEY) || '[]');
+      arr.push(obj);
+      localStorage.setItem(KEY, JSON.stringify(arr));
+      try{ if(typeof BroadcastChannel !== 'undefined'){ new BroadcastChannel('pilot_channel').postMessage('contacts_updated'); } }catch(e){}
+    }
+
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      feedback.textContent = '';
+      // honeypot check
+      if(HP && HP.value.trim()){
+        feedback.textContent = 'Spam detected';
+        return;
+      }
+      const name = nameEl.value.trim();
+      const phone = phoneEl.value.trim();
+      const message = messageEl.value.trim();
+      if(!name){ feedback.textContent = 'Please enter your name.'; nameEl.focus(); return; }
+      if(!phone){ feedback.textContent = 'Please enter your phone number.'; phoneEl.focus(); return; }
+      if(!message){ feedback.textContent = 'Please enter a short message.'; messageEl.focus(); return; }
+
+      // Save contact (demo local save). In production POST to API
+      const contact = { id:'m_'+Date.now(), name, phone, email:emailEl.value.trim(), subject:subjectEl.value.trim(), message, attachments: (attachmentsEl.files?attachmentsEl.files.length:0), createdAt: new Date().toISOString() };
+      saveContactLocally(contact);
+
+      // Clear draft and show success
+      localStorage.removeItem(DRAFT_KEY);
+      feedback.textContent = 'Thanks — we received your message. We will contact you soon.';
+      form.reset();
+      attachPreview.innerHTML = '';
+      updateCounter();
+      nameEl.focus();
+
+      // small nice microinteraction: show estimated response time change briefly
+      const eta = document.getElementById('eta');
+      const old = eta.innerHTML;
+      eta.innerHTML = 'Estimated reply: <strong>~30 minutes</strong>';
+      setTimeout(()=> eta.innerHTML = old, 4500);
+    });
+
+    // mailto behaviour (prefill)
+    document.getElementById('mailtoBtn').addEventListener('click', () => {
+      const subject = encodeURIComponent(subjectEl.value.trim() || 'Pilot Travels enquiry');
+      const body = encodeURIComponent(`Name: ${nameEl.value}\nPhone: ${phoneEl.value}\nEmail: ${emailEl.value}\n\n${messageEl.value}`);
+      window.location.href = `mailto:pilottravels74@gmail.com?subject=${subject}&body=${body}`;
+    });
+
+    // Quick book button
+    document.getElementById('bookBtn').addEventListener('click', () => location.href = 'customer.html');
+
+    // Load draft on init
+    loadDraft();
+
+    // Accessibility: focus name
+    nameEl.focus();
+  </script>
+</body>
+</html>

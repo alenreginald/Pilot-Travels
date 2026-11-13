@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gallery — Pilot Travels</title>
+  <meta name="description" content="Customer gallery — photos of our fleet, trips and happy customers." />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f6fbff;
+      --card:#ffffff;
+      --muted:#54646f;
+      --text:#072035;
+      --accent:#0b63a5;
+      --accent-2:#0b9bd8;
+      --glass: rgba(11,99,165,0.06);
+      --radius:12px;
+      --shadow-sm: 0 8px 20px rgba(6,20,40,0.06);
+      --shadow-lg: 0 20px 50px rgba(6,20,40,0.08);
+      --container:1200px;
+      --gap:16px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    a{color:var(--accent);text-decoration:none}
+    img{max-width:100%;display:block}
+    .wrap{max-width:var(--container);margin:20px auto;padding:20px}
+
+    /* HERO */
+    .hero{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      padding:22px;
+      border-radius:16px;
+      background:linear-gradient(180deg,#ffffff,#f3f9ff);
+      box-shadow:var(--shadow-lg);
+      align-items:flex-start;
+    }
+    .hero-row{display:flex;width:100%;gap:16px;align-items:center;justify-content:space-between;}
+    h1{font-family:Poppins;margin:0;font-size:26px;line-height:1.05}
+    p.lead{margin:6px 0 0 0;color:var(--muted);max-width:70ch}
+
+    /* CONTROLS */
+    .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px;width:100%}
+    .controls .left{display:flex;gap:10px;align-items:center;flex:1;min-width:200px}
+    .controls input[type="search"], .controls select{
+      padding:10px 12px;border-radius:10px;border:1px solid rgba(6,20,40,0.06);background:var(--card);color:var(--text);font-size:14px;min-width:120px;
+      box-shadow:0 6px 16px rgba(11,99,165,0.02);
+    }
+    .controls input.search{width:360px;max-width:48%;min-width:140px}
+    .actions{display:flex;gap:10px;align-items:center;justify-content:flex-end}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer;box-shadow:0 10px 28px rgba(11,99,165,0.12)}
+    .btn-ghost{background:transparent;border:1px solid rgba(11,99,165,0.06);padding:9px 12px;border-radius:10px;cursor:pointer;color:var(--muted)}
+    .btn-ghost:focus,.btn-primary:focus{outline:3px solid rgba(11,155,216,0.12);outline-offset:3px}
+
+    /* GALLERY GRID */
+    .gallery-wrap{margin-top:18px}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+      gap:var(--gap);
+      align-items:start;
+    }
+    .card{
+      background:var(--card);
+      border-radius:12px;
+      overflow:visible;
+      box-shadow:var(--shadow-sm);
+      transition:transform .18s,box-shadow .18s;
+      display:flex;
+      flex-direction:column;
+      min-height:160px;
+    }
+    .card:focus-within,.card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+    .card-media{
+      position:relative;
+      padding-top:60%;
+      background:linear-gradient(180deg,#eef6fb,#f8fbff);
+      overflow:hidden;
+      border-top-left-radius:12px;border-top-right-radius:12px;
+    }
+    .card-media img{
+      position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease;transform-origin:center center;
+    }
+    .card:hover .card-media img{transform:scale(1.04)}
+
+    /* favorite overlay (kept small) */
+    .fav-overlay{position:absolute;top:10px;right:10px;z-index:5;display:flex;gap:6px;align-items:center}
+    .fav-btn{background:rgba(255,255,255,0.95);border-radius:10px;border:1px solid rgba(6,20,40,0.04);padding:6px 8px;cursor:pointer;font-size:18px;color:rgba(0,0,0,0.18);transition:transform .12s,color .12s}
+    .fav-btn.fav{color:#e84a6b;transform:scale(1.06);box-shadow:0 6px 18px rgba(232,74,107,0.08)}
+    .fav-btn:focus{outline:3px solid rgba(11,155,216,0.12);outline-offset:3px;border-radius:8px}
+
+    /* caption area separated from image, ensures legibility */
+    .card-body{
+      display:flex;
+      gap:12px;
+      padding:14px;
+      background:var(--card);
+      border-top:1px solid #f1f5f9;
+      align-items:center;
+      justify-content:space-between;
+      min-height:84px;
+    }
+    .meta{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+    .meta .title{font-weight:700;color:var(--text);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+    .meta .sub{font-size:13px;color:#6b7d87;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .card-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+    .card-actions .row{display:flex;gap:8px;align-items:center}
+    .rating{font-size:13px;color:var(--muted);min-width:86px;text-align:right}
+
+    /* EMPTY STATE */
+    .empty{
+      padding:28px;border-radius:12px;background:var(--card);text-align:center;color:var(--muted);box-shadow:var(--shadow-sm);margin-top:10px
+    }
+
+    /* LIGHTBOX */
+    .lb-backdrop{position:fixed;inset:0;background:rgba(6,12,20,0.86);display:none;align-items:center;justify-content:center;z-index:999;padding:18px}
+    .lightbox{width:100%;max-width:1100px;max-height:92vh;display:flex;gap:18px;align-items:center}
+    .lb-img{flex:1;background:#000;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+    .lb-img img{max-width:100%;max-height:92vh;object-fit:contain;display:block}
+    .lb-side{width:320px;max-width:40%;display:flex;flex-direction:column;gap:10px}
+    .lb-meta{background:var(--card);padding:12px;border-radius:10px;box-shadow:var(--shadow-sm);color:var(--muted)}
+    .lb-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+    /* responsive tweaks */
+    @media (max-width:980px){
+      .grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+      .lightbox{flex-direction:column-reverse}
+      .lb-side{width:100%;max-width:none}
+    }
+    @media (max-width:560px){
+      .hero{padding:16px}
+      h1{font-size:20px}
+    }
+
+    /* small visual polish for controls */
+    .controls .left > * { box-shadow: 0 6px 16px rgba(11,99,165,0.02); }
+  </style>
+</head>
+<body>
+
+
+<!-- START: SHARED NAV (paste this immediately after <body>, replacing any existing <header> ... </header>) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+<header id="site-header" aria-label="Primary navigation">
+  <div class="nav-wrap">
+    <div class="brand">
+      <div class="logo">PT</div>
+      <div class="site-text">
+        <div class="site-title">Pilot Travels</div>
+        <div class="site-sub">Nagercoil · Kanyakumari</div>
+      </div>
+    </div>
+
+    <button id="nav-toggle" aria-expanded="false" aria-label="Open menu" class="nav-toggle">☰</button>
+
+    <nav id="main-nav" class="main-nav" aria-label="Main">
+      <a href="home.html" data-nav="home" class="nav-link"><span class="label">Home</span></a>
+      <a href="about.html" data-nav="about" class="nav-link"><span class="label">About</span></a>
+      <a href="bookcars.html" data-nav="bookcars" class="nav-link"><span class="label">Book Cars</span></a>
+      <a href="services.html" data-nav="services" class="nav-link"><span class="label">Services</span></a>
+      <a href="gallery.html" data-nav="gallery" class="nav-link"><span class="label">Gallery</span></a>
+      <a href="contact.html" data-nav="contact" class="nav-link"><span class="label">Contact</span></a>
+
+      <!-- sliding indicator -->
+      <div id="nav-indicator" aria-hidden="true"></div>
+    </nav>
+
+    <div class="nav-actions">
+      <button id="login-btn" class="btn-cta">Login / Book</button>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Compact header styles — Poppins used for labels */
+  :root{
+    --accent:#0b63a5; --accent2:#0b9bd8; --muted:#56646c; --white:#fff;
+    --glass: rgba(11,99,165,0.06); --shadow: 0 14px 40px rgba(6,20,40,0.08);
+  }
+  #site-header{position:sticky;top:0;z-index:1200;background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.94));backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,0.04)}
+  .nav-wrap{max-width:1200px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:var(--white);font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;box-shadow:0 8px 24px rgba(11,99,165,0.12)}
+  .site-title{font-family:'Poppins',sans-serif;font-weight:700}
+  .site-sub{font-size:13px;color:var(--muted)}
+
+  /* nav */
+  .main-nav{display:flex;gap:8px;align-items:center;position:relative;padding:6px}
+  .nav-link{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--muted);text-decoration:none;font-family:'Poppins',sans-serif;font-weight:600;transition:all .16s}
+  .nav-link:hover{background:var(--glass);transform:translateY(-3px);color:#052233}
+  .nav-link.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--white) !important;box-shadow:var(--shadow);transform:none}
+  #nav-indicator{position:absolute;bottom:-8px;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:left .22s ease,width .22s ease;box-shadow:0 10px 30px rgba(11,99,165,0.14);pointer-events:none}
+
+  /* actions */
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .btn-cta{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--white);padding:9px 12px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+
+  /* mobile */
+  .nav-toggle{display:none;background:transparent;border:0;font-size:20px;padding:8px;cursor:pointer}
+  @media (max-width:880px){
+    .nav-wrap{padding:10px}
+    .main-nav{position:fixed;left:8px;right:8px;top:72px;background:rgba(255,255,255,0.98);flex-direction:column;gap:6px;padding:12px;border-radius:10px;box-shadow:0 14px 30px rgba(6,20,40,0.06);transform:translateY(-8px);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s}
+    .main-nav.open{opacity:1;transform:translateY(0);pointer-events:auto}
+    .nav-toggle{display:inline-flex}
+    #nav-indicator{display:none}
+    .nav-link{width:calc(100% - 28px)}
+    .nav-actions{display:flex}
+  }
+
+  /* accessibility focus */
+  .nav-link:focus{outline:0;box-shadow:0 0 0 6px rgba(11,99,165,0.12)}
+</style>
+
+<script>
+(function(){
+  const nav = document.getElementById('main-nav');
+  const links = Array.from(nav.querySelectorAll('.nav-link'));
+  const indicator = document.getElementById('nav-indicator');
+  const toggle = document.getElementById('nav-toggle');
+  const loginBtn = document.getElementById('login-btn');
+
+  // Determine and set active link by current file or hash
+  function setActiveByLocation(){
+    const filename = (location.pathname || '').split('/').pop().toLowerCase() || 'home.html';
+    const fileBase = filename.replace(/\.html$/,'');
+    const hash = (location.hash || '').replace('#','').toLowerCase();
+
+    // clear
+    links.forEach(a => { a.classList.remove('active'); a.removeAttribute('aria-current'); });
+
+    // match by href filename
+    let match = links.find(a => {
+      const href = (a.getAttribute('href')||'').split('/').pop().toLowerCase();
+      if(!href) return false;
+      if(href === filename) return true;
+      if(href.replace(/\.html$/,'') === fileBase) return true;
+      return false;
+    });
+
+    // if hash present, prefer matching data-nav or hash target
+    if(hash){
+      const hashMatch = links.find(a => (a.dataset && a.dataset.nav && a.dataset.nav.toLowerCase() === hash) || ((a.getAttribute('href')||'').split('#').pop().toLowerCase() === hash));
+      if(hashMatch) match = hashMatch;
+    }
+
+    if(!match) match = links[0];
+    if(match){
+      match.classList.add('active');
+      match.setAttribute('aria-current','page');
+      moveIndicator(match);
+    }
+  }
+
+  // Move sliding indicator under element
+  function moveIndicator(el){
+    if(!indicator) return;
+    const r = el.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+    const left = r.left - navRect.left;
+    const width = r.width;
+    indicator.style.left = (left + 8) + 'px';
+    indicator.style.width = (width - 16) + 'px';
+  }
+
+  // Click behavior: for links to same-page anchors (#id) do smooth scroll
+  links.forEach(a => {
+    a.addEventListener('click', function(e){
+      // close mobile nav if open
+      if(nav.classList.contains('open')){ nav.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
+
+      // smooth-scroll if link contains a hash pointing to element on same page
+      const href = a.getAttribute('href') || '';
+      if(href.startsWith('#')){
+        e.preventDefault();
+        const id = href.slice(1);
+        const el = document.getElementById(id);
+        if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+        // set active visually
+        links.forEach(x => x.classList.remove('active'));
+        a.classList.add('active');
+        a.setAttribute('aria-current','page');
+        return;
+      }
+      // otherwise allow default (navigate or your injector will handle)
+    });
+
+    // keyboard activation
+    a.addEventListener('keydown', (ev) => { if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); a.click(); } });
+  });
+
+  // toggle mobile menu
+  toggle && toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  // ensure indicator repositions on resize/scroll
+  let t;
+  window.addEventListener('resize', ()=>{ clearTimeout(t); t=setTimeout(()=> { const active = nav.querySelector('.nav-link.active'); if(active) moveIndicator(active); }, 100); });
+  window.addEventListener('scroll', ()=> { const active = nav.querySelector('.nav-link.active'); if(active) moveIndicator(active); }, { passive:true });
+
+  // login button goes to booking page
+  loginBtn && loginBtn.addEventListener('click', ()=> { location.href = 'customer.html'; });
+
+  // initial set
+  setActiveByLocation();
+
+  // respond to history/hash changes
+  window.addEventListener('popstate', setActiveByLocation);
+  window.addEventListener('hashchange', setActiveByLocation);
+
+  // Expose hook for page scripts (optional): window.onNavReady = function(){ ... }
+  window.onNavReady = function(){ setActiveByLocation(); };
+
+  // SAFETY: prevent negative distance inputs anywhere on site
+  (function clampDistanceInputs(){
+    try{
+      const binds = (selector) => {
+        const els = Array.from(document.querySelectorAll(selector));
+        els.forEach(d => {
+          d.setAttribute('min', '0');
+          d.addEventListener('input', ()=> { if(Number(d.value) < 0) d.value = 0; });
+        });
+      };
+      // common id used in your pages
+      binds('#distance');
+      // also clamp any inputs that have data-distance attribute
+      binds('input[data-distance]');
+    }catch(e){ /* ignore */ }
+  })();
+
+})();
+</script>
+<!-- END: SHARED NAV -->
+
+
+
+
+  <main class="wrap" role="main" aria-labelledby="galleryTitle">
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="galleryTitle">
+      <div class="hero-row">
+        <div>
+          <h1 id="galleryTitle">Photo Gallery — Fleet & Trips</h1>
+          <p class="lead">Browse real photos of our vehicles and trips. Click any image to preview, download or copy its link. The gallery updates when new images are added.</p>
+        </div>
+
+        <div class="actions" role="group" aria-label="page actions">
+          <button id="refreshBtn" class="btn-primary" title="Refresh gallery">Refresh</button>
+        </div>
+      </div>
+
+      <div class="controls" role="region" aria-label="Gallery controls">
+        <div class="left" role="search">
+          <input id="search" class="search" type="search" placeholder="Search by filename or tag (e.g. Innova)" aria-label="Search gallery" />
+          <select id="filterOwner" aria-label="Filter images">
+            <option value="all">All</option>
+            <option value="owner">Owner uploads</option>
+            <option value="external">External URLs</option>
+          </select>
+          <select id="sort" aria-label="Sort images">
+            <option value="new">Newest</option>
+            <option value="old">Oldest</option>
+            <option value="name">Name A→Z</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center">
+          <button id="clearFilter" class="btn-ghost" title="Reset filters">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY GRID -->
+    <section class="gallery-wrap" aria-label="Image gallery">
+      <div id="galleryGrid" class="grid" aria-live="polite"></div>
+      <div id="emptyState" class="empty" style="display:none">No images yet. Check back soon.</div>
+    </section>
+
+    <footer style="margin-top:18px;color:var(--muted);text-align:center">© Pilot Travels · Nagercoil</footer>
+  </main>
+
+  <!-- LIGHTBOX -->
+  <div id="lbBackdrop" class="lb-backdrop" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="lightbox" role="document" aria-label="Image preview">
+      <div class="lb-img" aria-live="polite">
+        <img id="lbImage" alt="Preview">
+      </div>
+
+      <aside class="lb-side">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800" id="lbTitle">Image</div>
+          <button id="lbClose" class="btn-ghost" aria-label="Close preview">Close</button>
+        </div>
+
+        <div class="lb-meta" id="lbMeta">
+          <div id="lbInfo" class="small">Info</div>
+          <div id="lbTags" style="margin-top:8px"></div>
+        </div>
+
+        <div class="lb-actions" aria-label="Image actions">
+          <a id="lbDownload" class="btn-ghost" download>Download</a>
+          <button id="lbCopy" class="btn-ghost">Copy link</button>
+          <button id="lbPrev" class="btn-ghost" title="Previous (←)">Prev</button>
+          <button id="lbNext" class="btn-ghost" title="Next (→)">Next</button>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+          <button id="lightboxFav" class="fav-btn" aria-label="Toggle favorite">♡</button>
+          <div id="lightboxRating" style="display:flex;gap:6px;align-items:center">
+            <div class="small">Rate:</div>
+            <div id="lightboxStars" style="display:flex;gap:6px"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Storage keys
+    const GALLERY_KEY = 'demo_gallery_v2';
+    const FAVS_KEY = 'gallery_favs_v2';
+    const RATINGS_KEY = 'gallery_ratings_v2';
+
+    // DOM refs
+    const grid = document.getElementById('galleryGrid');
+    const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('search');
+    const filterOwner = document.getElementById('filterOwner');
+    const sortSelect = document.getElementById('sort');
+    const clearFilter = document.getElementById('clearFilter');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    // Lightbox refs
+    const lbBackdrop = document.getElementById('lbBackdrop');
+    const lbImage = document.getElementById('lbImage');
+    const lbTitle = document.getElementById('lbTitle');
+    const lbInfo = document.getElementById('lbInfo');
+    const lbTags = document.getElementById('lbTags');
+    const lbDownload = document.getElementById('lbDownload');
+    const lbCopy = document.getElementById('lbCopy');
+    const lbPrev = document.getElementById('lbPrev');
+    const lbNext = document.getElementById('lbNext');
+    const lbClose = document.getElementById('lbClose');
+    const lightboxFav = document.getElementById('lightboxFav');
+    const lightboxStars = document.getElementById('lightboxStars');
+
+    // State
+    let items = [];
+    let filtered = [];
+    let currentIndex = -1;
+    let favs = JSON.parse(localStorage.getItem(FAVS_KEY) || '{}');
+    let ratings = JSON.parse(localStorage.getItem(RATINGS_KEY) || '{}');
+
+    // Helpers
+    function loadGallery(){
+      try { return JSON.parse(localStorage.getItem(GALLERY_KEY) || '[]'); } catch(e){ return []; }
+    }
+    function normalize(item){
+      return {
+        id: item.id || ('g_' + Date.now() + '_' + Math.random().toString(36).slice(2,8)),
+        src: item.src || '',
+        name: item.name || (item.src ? item.src.split('/').pop().split('?')[0] : 'image'),
+        uploadedAt: item.uploadedAt || new Date().toISOString(),
+        owner: !!item.owner
+      };
+    }
+    function humanDate(iso){ try{ return new Date(iso).toLocaleString(); } catch(e){ return iso; } }
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    // Sorting & filtering
+    function sortItems(arr, mode){
+      const copy = arr.slice();
+      if(mode === 'new') copy.sort((a,b)=> new Date(b.uploadedAt) - new Date(a.uploadedAt));
+      else if(mode === 'old') copy.sort((a,b)=> new Date(a.uploadedAt) - new Date(b.uploadedAt));
+      else if(mode === 'name') copy.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
+      return copy;
+    }
+    function applyFilters(){
+      const q = (searchInput.value || '').trim().toLowerCase();
+      const f = filterOwner.value;
+      let out = items.slice();
+      if(f === 'owner') out = out.filter(x => x.owner);
+      if(f === 'external') out = out.filter(x => !x.owner);
+      if(q) out = out.filter(x => (x.name||'').toLowerCase().includes(q));
+      out = sortItems(out, sortSelect.value);
+      filtered = out;
+      renderGrid();
+    }
+
+    // Render grid
+    function renderGrid(){
+      grid.innerHTML = '';
+      if(!filtered || filtered.length === 0){
+        emptyState.style.display = 'block';
+        return;
+      } else emptyState.style.display = 'none';
+
+      filtered.forEach((it, idx) => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-media" role="button" tabindex="0" data-idx="${idx}" aria-label="Open ${escapeHtml(it.name)}">
+            <img src="${escapeHtml(it.src)}" alt="${escapeHtml(it.name)}" loading="lazy">
+            <div class="fav-overlay">
+              <button class="fav-btn ${favs[it.id] ? 'fav' : ''}" data-fav="${it.id}" aria-label="Favorite">${favs[it.id] ? '♥' : '♡'}</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="meta">
+              <span class="title">${escapeHtml(it.name)}</span>
+              <span class="sub">${it.owner ? 'Owner upload' : 'External'} · ${humanDate(it.uploadedAt)}</span>
+            </div>
+            <div class="card-actions">
+              <div class="row">
+                <a class="btn-ghost" href="${escapeHtml(it.src)}" download="${escapeHtml(it.name)}">Download</a>
+                <button class="btn-ghost copy-link" data-copy="${escapeHtml(it.src)}">Copy</button>
+              </div>
+              <div class="rating">${getAverageRatingDisplay(it.id)}</div>
+            </div>
+          </div>
+        `;
+        // handlers
+        const media = card.querySelector('.card-media');
+        media.addEventListener('click', ()=> openLightboxAt(idx));
+        media.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightboxAt(idx); } });
+        const favBtn = card.querySelector('[data-fav]');
+        favBtn.addEventListener('click', (ev)=> { ev.stopPropagation(); toggleFav(it.id, favBtn); });
+        const copyBtn = card.querySelector('.copy-link');
+        copyBtn.addEventListener('click', (e)=> { e.stopPropagation(); const link = copyBtn.getAttribute('data-copy'); if(navigator.clipboard){ navigator.clipboard.writeText(link).then(()=> toast('Link copied')); } else prompt('Copy image link', link); });
+        grid.appendChild(card);
+      });
+    }
+
+    // Favorites & Ratings
+    function toggleFav(id, btnEl){
+      favs[id] = !favs[id];
+      if(!favs[id]) delete favs[id];
+      localStorage.setItem(FAVS_KEY, JSON.stringify(favs));
+      if(btnEl){ btnEl.classList.toggle('fav', !!favs[id]); btnEl.textContent = favs[id] ? '♥' : '♡'; }
+      applyFilters();
+    }
+    function getAverageRatingDisplay(id){
+      const r = ratings[id];
+      if(!r || !r.count) return 'No ratings';
+      const avg = r.sum / r.count;
+      return `${avg.toFixed(1)} ★ (${r.count})`;
+    }
+    function saveRating(id, value){
+      const r = ratings[id] || { sum:0, count:0 };
+      r.sum += value;
+      r.count += 1;
+      ratings[id] = r;
+      localStorage.setItem(RATINGS_KEY, JSON.stringify(ratings));
+      applyFilters();
+      renderLightboxRating(id);
+    }
+
+    // Lightbox
+    function openLightboxAt(idx){
+      if(idx < 0 || idx >= filtered.length) return;
+      currentIndex = idx;
+      const it = filtered[idx];
+      lbImage.src = it.src;
+      lbImage.alt = it.name || 'Image';
+      lbTitle.textContent = it.name || 'Image';
+      lbInfo.textContent = `${it.owner ? 'Owner upload' : 'External'} · ${humanDate(it.uploadedAt || '')}`;
+      lbTags.innerHTML = `<div class="small">Filename: ${escapeHtml(it.name || '')}</div>`;
+      lbDownload.href = it.src; lbDownload.download = it.name || 'image';
+      setLightboxFav(it.id); renderLightboxRating(it.id);
+      lbBackdrop.style.display = 'flex'; lbBackdrop.setAttribute('aria-hidden','false'); lbClose.focus();
+    }
+    function closeLightbox(){ lbBackdrop.style.display = 'none'; lbBackdrop.setAttribute('aria-hidden','true'); lbImage.src = ''; currentIndex = -1; }
+    function showPrev(){ if(filtered.length === 0) return; currentIndex = (currentIndex <= 0) ? filtered.length - 1 : currentIndex - 1; openLightboxAt(currentIndex); }
+    function showNext(){ if(filtered.length === 0) return; currentIndex = (currentIndex >= filtered.length - 1) ? 0 : currentIndex + 1; openLightboxAt(currentIndex); }
+
+    lbCopy.addEventListener('click', ()=> { if(currentIndex < 0) return; const it = filtered[currentIndex]; const link = it.src; if(navigator.clipboard){ navigator.clipboard.writeText(link).then(()=> toast('Link copied')); } else prompt('Copy image link', link); });
+    lbPrev.addEventListener('click', showPrev);
+    lbNext.addEventListener('click', showNext);
+    lbClose.addEventListener('click', closeLightbox);
+    lbBackdrop.addEventListener('click', (e)=> { if(e.target === lbBackdrop) closeLightbox(); });
+    document.addEventListener('keydown', (e)=> { if(lbBackdrop.style.display === 'flex'){ if(e.key === 'Escape') closeLightbox(); if(e.key === 'ArrowLeft') showPrev(); if(e.key === 'ArrowRight') showNext(); } });
+
+    function setLightboxFav(id){
+      lightboxFav.textContent = favs[id] ? '♥' : '♡';
+      lightboxFav.classList.toggle('fav', !!favs[id]);
+      lightboxFav.onclick = (e)=>{ e.stopPropagation(); favs[id] = !favs[id]; if(!favs[id]) delete favs[id]; localStorage.setItem(FAVS_KEY, JSON.stringify(favs)); applyFilters(); setLightboxFav(id); };
+    }
+    function renderLightboxRating(id){
+      lightboxStars.innerHTML = '';
+      const r = ratings[id] || { sum:0, count:0 };
+      const avg = r.count ? (r.sum / r.count) : 0;
+      for(let i=1;i<=5;i++){
+        const btn = document.createElement('button');
+        btn.innerHTML = '★';
+        btn.className = i <= Math.round(avg) ? '' : 'inactive';
+        btn.title = `${i} star${i>1?'s':''}`;
+        ((score)=>{ btn.addEventListener('click', (ev)=>{ ev.stopPropagation(); if(!confirm(`Submit ${score} star rating?`)) return; saveRating(id, score); toast('Thanks for your rating!'); }); })(i);
+        lightboxStars.appendChild(btn);
+      }
+      const avgNode = document.createElement('div'); avgNode.style.marginLeft='8px'; avgNode.style.color='var(--muted)'; avgNode.style.fontSize='13px'; avgNode.textContent = getAverageRatingDisplay(id);
+      lightboxStars.appendChild(avgNode);
+    }
+
+    // tiny toast
+    let toastTimer = null;
+    function toast(msg, ms=1600){
+      const existing = document.getElementById('__g_toast'); if(existing) existing.remove();
+      const t = document.createElement('div'); t.id='__g_toast'; t.textContent = msg;
+      t.style.position='fixed'; t.style.right='18px'; t.style.bottom='18px'; t.style.background='linear-gradient(90deg,var(--accent),var(--accent-2))';
+      t.style.color='#fff'; t.style.padding='10px 14px'; t.style.borderRadius='10px'; t.style.boxShadow='0 10px 30px rgba(11,99,165,0.16)'; t.style.zIndex=1200;
+      document.body.appendChild(t); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.remove(), ms);
+    }
+
+    // Initial boot
+    function boot(){
+      const raw = loadGallery();
+      items = raw.map(normalize);
+      if(items.length === 0){
+        items = [
+          { src:'https://', name:'Premium car exterior', uploadedAt:new Date().toISOString(), owner:false },
+          { src:'https://drive.google.com/file/d/1094GYxfQ7CqM9u8kN-FJWgNqn29z3YlX/view?usp=drive_link-1525609004556-c46c7d6cf023?w=1600&q=80&auto=format&fit=crop', name:'Family trip van', uploadedAt:new Date().toISOString(), owner:false },
+          { src:'https://images.unsplash.com/photo-1542367597-94a3c31e40d0?w=1600&q=80&auto=format&fit=crop', name:'Sedan comfort', uploadedAt:new Date().toISOString(), owner:false }
+        ].map(normalize);
+      }
+      sortSelect.value = 'new';
+      applyFilters();
+    }
+
+    refreshBtn.addEventListener('click', ()=> { items = loadGallery().map(normalize); applyFilters(); toast('Gallery refreshed'); });
+
+    searchInput.addEventListener('input', debounce(applyFilters, 170));
+    filterOwner.addEventListener('change', applyFilters);
+    sortSelect.addEventListener('change', applyFilters);
+    clearFilter.addEventListener('click', ()=> { searchInput.value=''; filterOwner.value='all'; sortSelect.value='new'; applyFilters(); });
+
+    function debounce(fn, ms=150){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); };}
+
+    // BroadcastChannel sync + storage fallback (keeps gallery in sync when updated elsewhere)
+    if(typeof BroadcastChannel !== 'undefined'){
+      try{
+        const bc = new BroadcastChannel('pilot_channel');
+        bc.onmessage = (ev)=>{ if(ev.data === 'gallery_updated' || ev.data === 'cars_updated' || ev.data === 'pilot_location_updated'){ items = loadGallery().map(normalize); applyFilters(); } };
+      } catch(e){}
+    }
+    window.addEventListener('storage', (ev)=> {
+      if(ev.key === GALLERY_KEY){ items = loadGallery().map(normalize); applyFilters(); }
+      if(ev.key === FAVS_KEY) favs = JSON.parse(localStorage.getItem(FAVS_KEY) || '{}');
+      if(ev.key === RATINGS_KEY) ratings = JSON.parse(localStorage.getItem(RATINGS_KEY) || '{}');
+    });
+
+    // expose refresh for owner pages if needed
+    window.refreshGallery = function(){ items = loadGallery().map(normalize); applyFilters(); };
+
+    boot();
+  </script>
+</body>
+</html>

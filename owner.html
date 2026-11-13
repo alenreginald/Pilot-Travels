@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pilot Travels — Owner Panel (Local)</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f7fbff; --card:#ffffff; --muted:#51626d; --text:#071827;
+      --accent:#0b63a5; --accent-2:#0b9bd8; --radius:12px; --shadow:0 18px 44px rgba(10,25,41,0.06);
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+      --container:1180px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    .wrap{max-width:var(--container);margin:20px auto;padding:20px}
+    .header{display:flex;justify-content:space-between;align-items:center;gap:14px}
+    .brand{display:flex;gap:14px;align-items:center;min-width:0}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;flex-shrink:0}
+    h1{margin:0;font-size:20px}
+    .small{font-size:13px;color:var(--muted)}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .btn-ghost{background:transparent;border:1px solid rgba(11,99,165,0.08);padding:9px;border-radius:10px;cursor:pointer;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:20px;margin-top:18px;align-items:start}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:var(--shadow);overflow:visible}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:12px 10px;text-align:left;border-bottom:1px dashed rgba(11,99,165,0.04);vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    th{font-weight:700;color:var(--muted);font-size:13px}
+    .switch{width:56px;height:30px;border-radius:999px;background:#ecf0f3;padding:4px;position:relative;display:inline-block;cursor:pointer}
+    .switch .knob{width:22px;height:22px;border-radius:50%;background:white;position:absolute;left:4px;top:4px;transition:left .22s}
+    .switch.on{background:linear-gradient(90deg,#7ee6c1,#2ec89a)} .switch.on .knob{left:30px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(6,12,20,0.55);display:none;align-items:center;justify-content:center;z-index:600;padding:12px}
+    .modal{width:100%;max-width:920px;background:var(--card);border-radius:12px;padding:18px;box-shadow:var(--shadow);max-height:90vh;overflow:auto}
+    .toast{position:fixed;right:18px;bottom:18px;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;display:none;z-index:660}
+    @media (max-width:980px){ .grid{grid-template-columns:1fr} .header{flex-direction:column;align-items:flex-start;gap:12px} .brand{width:100%;justify-content:flex-start} .brand > div{min-width:0} }
+
+    .contact-manager .field{margin-top:8px}
+    .contact-manager label{font-weight:700;font-size:13px;display:block;margin-bottom:6px}
+    .contact-manager input{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(6,20,40,0.06);font-size:14px}
+    .map-preview-small{height:200px;border-radius:10px;overflow:hidden;border:1px solid rgba(6,20,40,0.04);margin-top:10px}
+    .muted-note{font-size:13px;color:var(--muted);margin-top:8px}
+    .sync-box{background:#f3fbff;border:1px solid rgba(11,155,216,0.06);padding:10px;border-radius:8px;margin-top:10px;font-size:13px}
+    code.k{background:#fff;border:1px dashed rgba(0,0,0,0.04);padding:4px 6px;border-radius:6px}
+
+    .upload-drop{border:2px dashed rgba(11,99,165,0.06);padding:14px;border-radius:10px;text-align:center;cursor:pointer;background:linear-gradient(180deg,#fff,#f7fbff);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:78px}
+    .upload-drop:hover{border-color:rgba(11,99,165,0.14)}
+    .owner-gallery-list{margin-top:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px}
+    .preview-item{width:92px;height:72px;border-radius:8px;overflow:hidden;background:#f6f8fb;display:flex;align-items:center;justify-content:center;border:1px solid rgba(11,99,165,0.04);position:relative}
+    .preview-item img{width:100%;height:100%;object-fit:cover}
+    .preview-item .rm{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);color:#fff;border-radius:6px;padding:2px 6px;font-size:12px;cursor:pointer}
+    .small-muted{color:var(--muted);font-size:13px}
+
+    button:focus, a:focus, input:focus { outline: 3px solid rgba(11,155,216,0.12); outline-offset:3px; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main">
+    <div class="header" role="banner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">PT</div>
+        <div style="min-width:0">
+          <h1>Pilot Travels — Owner Panel</h1>
+          <div class="small">Manage fleet, pricing, gallery & contact pin</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center">
+        <button id="owner-login-btn" class="btn">Owner Login</button>
+        <button id="export-csv" class="btn-ghost">Export Bookings CSV</button>
+      </div>
+    </div>
+
+    <div class="grid" role="region" aria-label="Owner dashboard">
+      <section>
+        <div class="card" aria-labelledby="carsHeading">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+            <div>
+              <strong id="carsHeading">Cars Inventory</strong>
+              <div class="small" style="margin-top:4px">Double-click price to edit inline</div>
+            </div>
+            <div class="small" id="owner-status">Not logged in</div>
+          </div>
+
+          <table id="cars-table" style="margin-top:14px">
+            <thead><tr><th>Car</th><th>Price</th><th>Status</th><th style="width:120px">Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <button id="refresh" class="btn-ghost">Refresh</button>
+            <button id="mass-offline" class="btn-ghost">Set All Offline</button>
+            <button id="mass-online" class="btn-ghost">Set All Online</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px" aria-labelledby="bookingsHeading">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong id="bookingsHeading">Bookings</strong>
+              <div class="small" style="margin-top:4px">Latest booking requests</div>
+            </div>
+            <div class="small" id="stats-count">Cars: 0 • Active: 0</div>
+          </div>
+          <div id="owner-bookings" style="margin-top:12px;max-height:320px;overflow:auto;padding-right:6px"></div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card" aria-labelledby="addCarHeading">
+          <h4 id="addCarHeading" style="margin:0">Add / Import Car</h4>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+            <div>
+              <label class="small" for="add-name">Name</label>
+              <input id="add-name" placeholder="Swift Dzire" />
+            </div>
+            <div>
+              <label class="small" for="add-img">Image URL</label>
+              <input id="add-img" placeholder="https://..." />
+            </div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1">
+                <label class="small" for="add-rate">Rate per km</label>
+                <input id="add-rate" type="number" min="0" />
+              </div>
+              <div style="flex:1">
+                <label class="small" for="add-day">Day package</label>
+                <input id="add-day" type="number" min="0" />
+              </div>
+            </div>
+            <div><button id="add-car" class="btn" style="width:100%">Add Car</button></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Quick Analytics</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+            <div style="background:linear-gradient(180deg,#fff,#f6fbff);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(6,20,40,0.04)">
+              <div class="small">Total Cars</div>
+              <div id="analytics-total" style="font-weight:800;font-size:18px">0</div>
+            </div>
+            <div style="background:linear-gradient(180deg,#fff,#f6fbff);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(6,20,40,0.04)">
+              <div class="small">Active (Online)</div>
+              <div id="analytics-active" style="font-weight:800;font-size:18px">0</div>
+            </div>
+            <div style="background:linear-gradient(180deg,#fff,#f6fbff);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(6,20,40,0.04)">
+              <div class="small">Total Bookings</div>
+              <div id="analytics-bookings" style="font-weight:800;font-size:18px">0</div>
+            </div>
+            <div style="background:linear-gradient(180deg,#fff,#f6fbff);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(6,20,40,0.04)">
+              <div class="small">Today Revenue</div>
+              <div id="analytics-revenue" style="font-weight:800;font-size:18px">₹0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gallery Upload Panel -->
+        <div class="card" style="margin-top:12px" id="gallery-panel" aria-labelledby="galleryPanelHeading">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:800" id="galleryPanelHeading">Gallery — Owner Upload</div>
+            <div class="small-muted">Images posted will appear on the public gallery</div>
+          </div>
+
+          <div style="margin-top:10px" aria-live="polite">
+            <label class="small" for="img-url">Upload files (jpg, png) — or paste an image URL</label>
+            <div style="margin-top:8px;display:grid;grid-template-columns:1fr 120px;gap:8px">
+              <input id="img-url" placeholder="https://example.com/photo.jpg" />
+              <button id="add-url-btn" class="btn-ghost">Add URL</button>
+            </div>
+
+            <div style="margin-top:10px">
+              <div class="upload-drop" id="dropZone" tabindex="0" role="button" aria-label="Upload images by click or drop">
+                <div style="font-weight:700">Click or drop files here</div>
+                <div style="font-size:12px;color:var(--muted);margin-top:8px">PNG / JPG — previews are stored locally</div>
+              </div>
+              <input id="fileInput" type="file" accept="image/*" multiple style="display:none" />
+              <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+                <button id="chooseFiles" class="btn-ghost">Choose files</button>
+                <button id="uploadAll" class="btn">Post to Gallery</button>
+                <a href="gallery.html" class="btn-ghost" style="margin-left:auto">Open Gallery</a>
+              </div>
+            </div>
+
+            <div id="previewArea" style="margin-top:12px" aria-live="polite">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-weight:700">Pending uploads</div>
+                <div><button id="clearPreview" class="btn-ghost">Clear</button></div>
+              </div>
+              <div id="owner-gallery-list" class="owner-gallery-list" style="margin-top:8px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Page Manager -->
+        <div class="card contact-manager" style="margin-top:12px">
+          <h4 style="margin:0">Contact Page Manager</h4>
+          <div class="muted-note">Pin your business location for the public Contact page. If auto-sync fails (file://), use the Sync Helper.</div>
+
+          <div style="margin-top:10px">
+            <div class="field">
+              <label for="pin-label">Label (e.g. Office)</label>
+              <input id="pin-label" placeholder="Pilot Travels - Nagercoil" />
+            </div>
+
+            <div class="field" style="display:flex;gap:8px;margin-top:8px">
+              <div style="flex:1">
+                <label for="pin-lat">Latitude</label>
+                <input id="pin-lat" placeholder="8.1743" />
+              </div>
+              <div style="width:120px">
+                <label for="pin-lng">Longitude</label>
+                <input id="pin-lng" placeholder="77.4333" />
+              </div>
+            </div>
+
+            <div class="field" style="display:flex;gap:8px;margin-top:8px">
+              <div style="flex:1">
+                <label for="pin-zoom">Zoom (7–18)</label>
+                <input id="pin-zoom" type="number" min="7" max="18" value="14" />
+              </div>
+            </div>
+
+            <div class="field" style="margin-top:8px">
+              <label for="pin-mapslink">Maps Link (optional)</label>
+              <input id="pin-mapslink" placeholder="https://maps.app.goo.gl/..." value="https://maps.app.goo.gl/ba6m7KkACiZQm1Ji7" />
+              <div class="small muted" style="margin-top:6px">If provided, the contact page "Open map" will open this link.</div>
+            </div>
+
+            <div class="form-actions" style="margin-top:10px;display:flex;gap:8px">
+              <button id="save-pin" class="btn">Save Location</button>
+              <button id="clear-pin" class="btn-ghost">Clear</button>
+              <a id="open-contact-page" class="btn-ghost" href="contact.html" target="_blank" rel="noopener">Open Contact Page</a>
+            </div>
+
+            <div class="map-preview-small" id="contactMapPreview" aria-live="polite" style="margin-top:10px">
+              <div style="padding:18px;color:var(--muted)" id="contactMapPlaceholder">No location pinned yet. Save to preview.</div>
+            </div>
+
+            <div class="sync-box" id="syncBox" style="display:none">
+              <div style="font-weight:700">Sync helper (fallback)</div>
+              <div style="margin-top:8px" id="syncNote">If the contact page did not auto-update (file://), paste this line into the browser console on <span class="k">contact.html</span> and press Enter:</div>
+              <pre id="syncSnippet" style="background:#fff;padding:8px;border-radius:6px;margin-top:8px;overflow:auto"></pre>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button id="copySync" class="btn-ghost">Copy Sync Command</button>
+                <button id="openAndPaste" class="btn">Open Contact & Focus Console</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px" class="small">Open this file with the query <code>?access=portal</code> to access owner features (example above).</footer>
+  </div>
+
+  <div id="modal-backdrop" class="modal-backdrop" aria-hidden="true"><div id="modal-root" class="modal" role="dialog" aria-modal="true"></div></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function(){
+      // Keys
+      const CARS_KEY = 'demo_cars_v2';
+      const BOOKINGS_KEY = 'demo_bookings_v2';
+      const OWNER_KEY = 'demo_owner_v2';
+      const PIN_KEY = 'pilot_location';
+      const GALLERY_KEY = 'demo_gallery_v2';
+
+      // Helpers
+      const $ = (s, r=document)=> r.querySelector(s);
+      const $$ = (s, r=document)=> Array.from((r||document).querySelectorAll(s));
+      function toast(msg, ms=2200){ const t = $('#toast'); t.textContent = msg; t.style.display='block'; t.style.opacity='1'; setTimeout(()=>{ t.style.transition='opacity .28s'; t.style.opacity='0'; setTimeout(()=> t.style.display='none',360); }, ms); }
+      function uid(pref='id'){ return pref + '_' + Date.now() + '_' + Math.floor(Math.random()*9000); }
+      function escapeHtml(s){ return s ? String(s).replace(/[&<>"]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])) : ''; }
+
+      // BroadcastChannel with fallback using localStorage write signals
+      const bc = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('pilot_channel') : null;
+      function bcPost(msg){
+        try{ if(bc) bc.postMessage(msg); else localStorage.setItem('pilot_sync_'+Date.now(), msg); } catch(e){}
+      }
+
+      // seeds
+      if(!localStorage.getItem(OWNER_KEY)) localStorage.setItem(OWNER_KEY, JSON.stringify({ username:'portal1', password:'pass123' }));
+      if(!localStorage.getItem(CARS_KEY)){
+        const seed = [
+          { id:'c1', name:'Innova Crysta', images:['https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=1200&q=80&auto=format&fit=crop'], type:'minivan', seats:7, ratePerKm:22, dayPackage:2500, status:'online', ac:true, notes:'Spacious for family trips', reviews:[] },
+          { id:'c2', name:'Maruti Dzire', images:['https://images.unsplash.com/photo-1542367597-94a3c31e40d0?w=1200&q=80&auto=format&fit=crop'], type:'sedan', seats:5, ratePerKm:15, dayPackage:1200, status:'online', ac:true, notes:'Comfortable city sedan', reviews:[] },
+          { id:'c3', name:'Hyundai i10', images:['https://images.unsplash.com/photo-1511397676602-6a1b751c8cc3?w=1200&q=80&auto=format&fit=crop'], type:'economy', seats:4, ratePerKm:9, dayPackage:800, status:'online', ac:false, notes:'Compact & fuel-efficient', reviews:[] }
+        ];
+        localStorage.setItem(CARS_KEY, JSON.stringify(seed));
+      }
+      if(!localStorage.getItem(BOOKINGS_KEY)) localStorage.setItem(BOOKINGS_KEY, JSON.stringify([]));
+      if(!localStorage.getItem(GALLERY_KEY)) localStorage.setItem(GALLERY_KEY, JSON.stringify([]));
+
+      // Owner session
+      let OwnerSession = { loggedIn:false, username:null };
+
+      // Modal helpers
+      const modalBackdrop = $('#modal-backdrop');
+      const modalRoot = $('#modal-root');
+      function openModal(html, opts={lock:false}){ modalRoot.innerHTML = html; modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false'); $$('.modal-close', modalRoot).forEach(b=>b.addEventListener('click', closeModal)); if(!opts.lock) modalBackdrop.addEventListener('click', backdropClick); }
+      function closeModal(){ modalRoot.innerHTML=''; modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); modalBackdrop.removeEventListener('click', backdropClick); }
+      function backdropClick(e){ if(e.target === modalBackdrop) closeModal(); }
+
+      // requireOwnerLogin: checks ?access=portal and then prompts login (demo)
+      async function requireOwnerLogin(){
+        // check query param
+        try{
+          const sp = new URLSearchParams(location.search);
+          if(!sp.get('access') || sp.get('access') !== 'portal'){
+            openModal(`<div style="display:flex;justify-content:space-between;align-items:center"><h3>Restricted</h3></div>
+              <div style="margin-top:12px">Open this owner file with the query param <code>?access=portal</code>. Example:<br><code>file:///C:/Users/alenr/Desktop/New%20folder%20(2)/owner.html?access=portal</code></div>
+              <div style="margin-top:12px;display:flex;gap:8px"><button class="modal-close btn-ghost">Close</button></div>`, { lock:true });
+            return false;
+          }
+        } catch(e){}
+        if(OwnerSession.loggedIn) return true;
+        return new Promise(resolve=>{
+          openModal(`<div style="display:flex;justify-content:space-between;align-items:center"><h3>Owner Login</h3><button class="modal-close">Close</button></div>
+            <div style="margin-top:12px">
+              <label>Username</label><input id="ow-user" placeholder="portal1" style="width:100%;padding:8px;margin-top:6px"/>
+              <label style="margin-top:8px">Password</label><input id="ow-pass" type="password" placeholder="pass123" style="width:100%;padding:8px;margin-top:6px"/>
+              <div style="margin-top:12px;display:flex;gap:8px"><button id="ow-go" class="btn">Login</button><button class="btn-ghost modal-close">Cancel</button></div>
+            </div>`, { lock:false });
+          modalRoot.querySelector('#ow-go').addEventListener('click', ()=>{
+            const u = modalRoot.querySelector('#ow-user').value.trim();
+            const p = modalRoot.querySelector('#ow-pass').value.trim();
+            const owner = JSON.parse(localStorage.getItem(OWNER_KEY) || '{"username":"portal1","password":"pass123"}');
+            if(u === owner.username && p === owner.password){
+              OwnerSession.loggedIn = true; OwnerSession.username = u;
+              closeModal();
+              $('#owner-status').textContent = `Logged in as ${u}`;
+              toast('Owner logged in');
+              resolve(true);
+            } else {
+              toast('Invalid owner credentials');
+              resolve(false);
+            }
+          });
+        });
+      }
+
+      $('#owner-login-btn').addEventListener('click', requireOwnerLogin);
+
+      // DB wrappers
+      const DB = {
+        getCars(){ try{ return JSON.parse(localStorage.getItem(CARS_KEY)||'[]'); } catch(e){ return []; } },
+        saveCars(list){ localStorage.setItem(CARS_KEY, JSON.stringify(list)); bcPost('cars_updated'); },
+        addCar(car){ const list = DB.getCars(); list.push(car); DB.saveCars(list); },
+        updateCar(id, car){ let list = DB.getCars(); list = list.map(c => c.id === id ? car : c); DB.saveCars(list); },
+        deleteCar(id){ let list = DB.getCars(); list = list.filter(c => c.id !== id); DB.saveCars(list); },
+        getBookings(){ try{ return JSON.parse(localStorage.getItem(BOOKINGS_KEY)||'[]'); } catch(e){ return []; } },
+        saveBookings(list){ localStorage.setItem(BOOKINGS_KEY, JSON.stringify(list)); bcPost('bookings_updated'); },
+        getGallery(){ try{ return JSON.parse(localStorage.getItem(GALLERY_KEY)||'[]'); } catch(e){ return []; } },
+        saveGallery(list){ localStorage.setItem(GALLERY_KEY, JSON.stringify(list)); bcPost('gallery_updated'); }
+      };
+
+      // Render functions
+      function renderCarsTable(list){
+        const tbody = $('#cars-table tbody'); tbody.innerHTML = '';
+        if(!Array.isArray(list) || list.length === 0){ tbody.innerHTML = '<tr><td colspan="4" class="small">No cars found</td></tr>'; return; }
+        for(const car of list){
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td style="min-width:180px"><strong>${escapeHtml(car.name)}</strong><div class="small" style="margin-top:6px">${escapeHtml(car.type||'')} • ${car.seats || '-'} seats</div></td>
+            <td ondblclick="startInlineEdit('${car.id}')" style="width:200px">₹${Number(car.ratePerKm)}/km • ₹${Number(car.dayPackage)||0}/day</td>
+            <td style="width:86px"><div class="switch ${car.status === 'online' ? 'on' : ''}" data-switch="${car.id}" role="button" aria-pressed="${car.status==='online'}"><div class="knob" aria-hidden="true"></div></div></td>
+            <td style="width:120px"><button class="btn-ghost" data-edit='${encodeURIComponent(JSON.stringify(car))}'>Edit</button> <button class="btn-ghost" data-delete="${car.id}">Delete</button></td>`;
+          tbody.appendChild(tr);
+        }
+        $$('[data-switch]').forEach(el => el.addEventListener('click', async (e) => { const id = e.currentTarget.dataset.switch; await toggleCarStatus(id, e.currentTarget); }));
+        $$('[data-edit]').forEach(b => b.addEventListener('click', (e) => { const car = JSON.parse(decodeURIComponent(e.currentTarget.getAttribute('data-edit'))); openEditModal(car); }));
+        $$('[data-delete]').forEach(b => b.addEventListener('click', (e) => { const id = e.currentTarget.getAttribute('data-delete'); deleteCar(id); }));
+      }
+
+      function renderBookings(){
+        const node = $('#owner-bookings'); node.innerHTML = '';
+        const bookings = DB.getBookings();
+        if(!bookings || bookings.length === 0){ node.innerHTML = '<div class="small">No bookings yet</div>'; return; }
+        bookings.slice().reverse().forEach(b => {
+          const el = document.createElement('div');
+          el.style.padding='10px';
+          el.style.borderBottom='1px solid rgba(0,0,0,0.04)';
+          const dt = new Date(b.createdAt || Date.now()).toLocaleString();
+          el.innerHTML = `<div style="display:flex;justify-content:space-between;gap:12px"><div style="min-width:0"><strong style="display:block">${escapeHtml(b.carName || b.carId || '(deleted)')}</strong><div class="small" style="margin-top:6px">${escapeHtml(b.pickup || '-') } → ${escapeHtml(b.drop || '-')}</div></div><div style="text-align:right;min-width:86px"><strong>₹${b.fare || 0}</strong><div class="small">${dt}</div></div></div>`;
+          node.appendChild(el);
+        });
+      }
+
+      function renderAnalytics(){
+        const list = DB.getCars() || [];
+        const total = list.length;
+        const active = list.filter(c => c.status === 'online').length;
+        $('#analytics-total').textContent = total;
+        $('#analytics-active').textContent = active;
+        const bookings = DB.getBookings() || [];
+        $('#analytics-bookings').textContent = bookings.length;
+        const today = new Date().toISOString().slice(0,10);
+        const rev = bookings.filter(b => (b.createdAt||'').slice(0,10) === today).reduce((s,b)=>s+(Number(b.fare)||0), 0);
+        $('#analytics-revenue').textContent = '₹' + rev;
+        $('#stats-count').textContent = `Cars: ${total} • Active: ${active}`;
+      }
+
+      // Actions
+      $('#add-car').addEventListener('click', async () => {
+        if(!await requireOwnerLogin()) return;
+        const name = $('#add-name').value.trim(); const img = $('#add-img').value.trim();
+        let rate = Math.max(0, Math.round(Number($('#add-rate').value) || 0));
+        let day = Math.max(0, Math.round(Number($('#add-day').value) || 0));
+        if(!name || !img) return toast('Name and image URL required');
+        const car = { id: uid('c'), name, images:[img], type:'sedan', seats:5, ratePerKm: rate, dayPackage: day, status:'online', ac:true, notes:'', reviews:[] };
+        DB.addCar(car);
+        $('#add-name').value=''; $('#add-img').value=''; $('#add-rate').value=''; $('#add-day').value='';
+        toast('Car added');
+        refreshAll();
+      });
+
+      async function deleteCar(id){ if(!await requireOwnerLogin()) return; if(!confirm('Delete this car?')) return; DB.deleteCar(id); toast('Car deleted'); refreshAll(); }
+      async function toggleCarStatus(id, el){ if(!await requireOwnerLogin()) return; const list = DB.getCars(); const car = list.find(c => c.id === id); if(!car) return toast('Car not found'); car.status = car.status === 'online' ? 'offline' : 'online'; DB.updateCar(id, car); if(el) el.classList.toggle('on', car.status === 'online'); toast(`${car.name} set ${car.status}`); bcPost('cars_updated'); refreshAll(); }
+
+      window.startInlineEdit = async function(carId){
+        if(!await requireOwnerLogin()) return;
+        const car = DB.getCars().find(c => c.id === carId);
+        if(!car) return toast('Not found');
+        openModal(`<div style="display:flex;justify-content:space-between;align-items:center"><h3>Edit price - ${escapeHtml(car.name)}</h3><button class="modal-close">Close</button></div><div style="margin-top:12px"><label>Rate per km</label><input id="in-rate" type="number" min="0" value="${Number(car.ratePerKm)||0}" style="width:100%;padding:8px;margin-top:6px"/><label style="margin-top:8px">Day package</label><input id="in-day" type="number" min="0" value="${Number(car.dayPackage)||0}" style="width:100%;padding:8px;margin-top:6px"/><div style="margin-top:12px;display:flex;gap:8px"><button id="in-save" class="btn">Save</button><button class="btn-ghost modal-close">Cancel</button></div></div>`);
+        modalRoot.querySelector('#in-save').addEventListener('click', async () => {
+          const rate = Math.max(0, Math.round(Number(modalRoot.querySelector('#in-rate').value) || 0));
+          const day = Math.max(0, Math.round(Number(modalRoot.querySelector('#in-day').value) || 0));
+          car.ratePerKm = rate; car.dayPackage = day; DB.updateCar(car.id, car); toast('Updated'); closeModal(); refreshAll();
+        });
+      };
+
+      function openEditModal(car){
+        openModal(`<div style="display:flex;justify-content:space-between;align-items:center"><h3>Edit ${escapeHtml(car.name)}</h3><button class="modal-close">Close</button></div><div style="margin-top:12px"><label>Name</label><input id="ed-name" value="${escapeHtml(car.name)}" style="width:100%;padding:8px;margin-top:6px"/><label style="margin-top:8px">Image URL</label><input id="ed-img" value="${escapeHtml(car.images?.[0]||'')}" style="width:100%;padding:8px;margin-top:6px"/><label style="margin-top:8px">Seats</label><input id="ed-seats" type="number" min="1" value="${car.seats||4}" style="width:100%;padding:8px;margin-top:6px"/><label style="margin-top:8px">Rate per km</label><input id="ed-rate" type="number" min="0" value="${Number(car.ratePerKm)||0}" style="width:100%;padding:8px;margin-top:6px"/><label style="margin-top:8px">Day package</label><input id="ed-day" type="number" min="0" value="${Number(car.dayPackage)||0}" style="width:100%;padding:8px;margin-top:6px"/><label style="margin-top:8px">Notes</label><textarea id="ed-notes" style="width:100%;padding:8px;margin-top:6px">${escapeHtml(car.notes||'')}</textarea><div style="margin-top:12px;display:flex;gap:8px"><button id="ed-save" class="btn">Save</button><button class="btn-ghost modal-close">Cancel</button></div></div>`);
+        modalRoot.querySelector('#ed-save').addEventListener('click', async () => {
+          car.name = modalRoot.querySelector('#ed-name').value.trim() || car.name;
+          const img = modalRoot.querySelector('#ed-img').value.trim(); if(img) car.images[0] = img;
+          car.seats = Math.max(1, parseInt(modalRoot.querySelector('#ed-seats').value) || car.seats);
+          car.ratePerKm = Math.max(0, Math.round(Number(modalRoot.querySelector('#ed-rate').value) || car.ratePerKm));
+          car.dayPackage = Math.max(0, Math.round(Number(modalRoot.querySelector('#ed-day').value) || car.dayPackage));
+          car.notes = modalRoot.querySelector('#ed-notes').value.trim();
+          DB.updateCar(car.id, car); toast('Car saved'); closeModal(); refreshAll();
+        });
+      }
+
+      // CSV export & mass ops
+      $('#export-csv').addEventListener('click', async () => {
+        if(!await requireOwnerLogin()) return;
+        const bookings = DB.getBookings();
+        if(!bookings || bookings.length === 0) return toast('No bookings to export');
+        const headers = ['id','carId','carName','pickup','drop','distance','fare','createdAt'];
+        const csv = [headers.join(',')].concat(bookings.map(b => headers.map(h => JSON.stringify(b[h] || '')).join(','))).join('\n');
+        const blob = new Blob([csv], { type:'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'bookings.csv'; a.click(); URL.revokeObjectURL(url);
+        toast('CSV downloaded');
+      });
+
+      $('#mass-offline').addEventListener('click', async () => {
+        if(!await requireOwnerLogin()) return;
+        if(!confirm('Set all cars to Offline?')) return;
+        const list = DB.getCars().map(c => ({ ...c, status: 'offline' }));
+        DB.saveCars(list); bcPost('cars_updated'); toast('All cars set offline'); refreshAll();
+      });
+      $('#mass-online').addEventListener('click', async () => {
+        if(!await requireOwnerLogin()) return;
+        const list = DB.getCars().map(c => ({ ...c, status: 'online' }));
+        DB.saveCars(list); bcPost('cars_updated'); toast('All cars set online'); refreshAll();
+      });
+
+      $('#refresh').addEventListener('click', ()=> { refreshAll(); toast('Refreshed'); });
+      function refreshAll(){ renderCarsTable(DB.getCars()); renderBookings(); renderAnalytics(); }
+
+      // Initial boot
+      refreshAll();
+
+      /* -------------------------------
+         CONTACT PINNING + SYNC FALLBACK
+         ------------------------------- */
+      function osmEmbedUrl(lat, lng, zoom = 14){ const dLon = 0.012 * (16/zoom); const dLat = 0.008 * (16/zoom); const minLon = (lng - dLon).toFixed(6); const minLat = (lat - dLat).toFixed(6); const maxLon = (lng + dLon).toFixed(6); const maxLat = (lat + dLat).toFixed(6); return `https://www.openstreetmap.org/export/embed.html?bbox=${minLon},${minLat},${maxLon},${maxLat}&layer=mapnik&marker=${lat},${lng}`; }
+
+      function loadPinToManager(){
+        const raw = localStorage.getItem(PIN_KEY);
+        if(!raw){
+          $('#pin-label').value=''; $('#pin-lat').value=''; $('#pin-lng').value=''; $('#pin-zoom').value=14; $('#pin-mapslink').value='https://maps.app.goo.gl/ba6m7KkACiZQm1Ji7';
+          $('#contactMapPreview').innerHTML = `<div style="padding:18px;color:var(--muted)" id="contactMapPlaceholder">No location pinned yet. Save to preview.</div>`;
+          hideSyncBox();
+          return;
+        }
+        try{
+          const p = JSON.parse(raw);
+          if(p && typeof p.lat !== 'undefined' && typeof p.lng !== 'undefined'){
+            $('#pin-label').value = p.label || '';
+            $('#pin-lat').value = Number(p.lat);
+            $('#pin-lng').value = Number(p.lng);
+            $('#pin-zoom').value = p.zoom || 14;
+            $('#pin-mapslink').value = p.mapsLink || 'https://maps.app.goo.gl/ba6m7KkACiZQm1Ji7';
+            renderContactPreview(p);
+            hideSyncBox();
+          } else { localStorage.removeItem(PIN_KEY); loadPinToManager(); }
+        } catch(e){ console.error('pin parse err', e); localStorage.removeItem(PIN_KEY); loadPinToManager(); }
+      }
+
+      function renderContactPreview(pin){
+        if(!pin || typeof pin.lat === 'undefined' || typeof pin.lng === 'undefined'){ $('#contactMapPreview').innerHTML = `<div style="padding:18px;color:var(--muted)" id="contactMapPlaceholder">No location pinned yet. Save to preview.</div>`; hideSyncBox(); return; }
+        const lat = Number(pin.lat), lng = Number(pin.lng);
+        const embed = osmEmbedUrl(lat,lng,pin.zoom || 14);
+        $('#contactMapPreview').innerHTML = `<iframe title="Location preview" src="${embed}" style="border:0;width:100%;height:100%"></iframe>`;
+      }
+
+      function hideSyncBox(){ $('#syncBox').style.display = 'none'; $('#syncSnippet').textContent = ''; }
+      function buildSyncSnippet(pin){
+        const json = JSON.stringify(pin);
+        // Writes pilot_location into localStorage and reloads the contact page (works in file:// when pasted in Console)
+        const snippet = `localStorage.setItem('pilot_location', ${JSON.stringify(json)}); location.reload();`;
+        return snippet;
+      }
+
+      $('#save-pin').addEventListener('click', async () => {
+        if(!await requireOwnerLogin()) return;
+        const label = $('#pin-label').value.trim();
+        const lat = parseFloat($('#pin-lat').value);
+        const lng = parseFloat($('#pin-lng').value);
+        let zoom = parseInt($('#pin-zoom').value) || 14;
+        let mapsLink = $('#pin-mapslink').value.trim();
+
+        if(Number.isNaN(lat) || Number.isNaN(lng)){ toast('Please provide valid latitude and longitude'); return; }
+        zoom = Math.max(7, Math.min(18, zoom));
+        const payload = { label, lat: Number(lat), lng: Number(lng), zoom, mapsLink };
+        localStorage.setItem(PIN_KEY, JSON.stringify(payload));
+        try{ if(bc) bc.postMessage('pilot_location_updated'); else localStorage.setItem('pilot_loc_sync_ts', Date.now().toString()); }catch(e){}
+        renderContactPreview(payload);
+        toast('Location saved — contact page will update if open');
+
+        const snippet = buildSyncSnippet(payload);
+        $('#syncSnippet').textContent = snippet;
+        $('#syncBox').style.display = 'block';
+        try{
+          await navigator.clipboard.writeText(snippet);
+          $('#syncNote').textContent = 'Auto-copied sync command to clipboard — paste into contact.html console if the contact page did not update automatically:';
+        }catch(e){
+          $('#syncNote').textContent = 'If the contact page did not auto-update (file://), paste the snippet below into the contact.html console and press Enter:';
+        }
+      });
+
+      $('#clear-pin').addEventListener('click', async () => {
+        if(!await requireOwnerLogin()) return;
+        if(!confirm('Clear pinned location?')) return;
+        localStorage.removeItem(PIN_KEY);
+        try{ if(bc) bc.postMessage('pilot_location_updated'); else localStorage.setItem('pilot_loc_sync_ts', Date.now().toString()); }catch(e){}
+        loadPinToManager();
+        toast('Pinned location cleared');
+        hideSyncBox();
+      });
+
+      $('#copySync').addEventListener('click', async () => {
+        const txt = $('#syncSnippet').textContent.trim();
+        if(!txt) return toast('Nothing to copy');
+        try{ await navigator.clipboard.writeText(txt); toast('Sync command copied to clipboard'); } catch(e){ toast('Copy failed — select and copy manually'); }
+      });
+
+      $('#openAndPaste').addEventListener('click', () => {
+        const w = window.open('contact.html', '_blank');
+        if(!w) { toast('Popup blocked — allow popups or open contact.html manually'); return; }
+        toast('Contact page opened — paste the sync command into the console (Ctrl+V) and press Enter if needed');
+      });
+
+      if(bc){
+        bc.onmessage = (ev) => {
+          if(ev.data === 'pilot_location_updated' || ev.data === 'pilot_location') loadPinToManager();
+          if(ev.data === 'cars_updated') refreshAll();
+          if(ev.data === 'bookings_updated') renderBookings();
+          if(ev.data === 'gallery_updated') toast('Gallery updated — visitor pages will refresh');
+        };
+      }
+
+      window.addEventListener('storage', (ev) => {
+        if(ev.key === PIN_KEY) loadPinToManager();
+        if(ev.key === CARS_KEY) refreshAll();
+        if(ev.key === BOOKINGS_KEY) renderBookings();
+        if(ev.key === GALLERY_KEY) toast('Gallery changed');
+      });
+
+      // Initial load
+      loadPinToManager();
+
+      /* -------------------------------
+         GALLERY UPLOAD - client-side
+         ------------------------------- */
+      const fileInput = document.getElementById('fileInput');
+      const dropZone = document.getElementById('dropZone');
+      const chooseFilesBtn = document.getElementById('chooseFiles');
+      const uploadAllBtn = document.getElementById('uploadAll');
+      const addUrlBtn = document.getElementById('add-url-btn');
+      const imgUrlInput = document.getElementById('img-url');
+      const ownerGalleryList = document.getElementById('owner-gallery-list');
+      const clearPreviewBtn = document.getElementById('clearPreview');
+
+      let pendingUploads = [];
+
+      function previewPending(){
+        ownerGalleryList.innerHTML = '';
+        if(pendingUploads.length === 0){
+          ownerGalleryList.innerHTML = `<div class="small-muted">No pending uploads</div>`;
+          return;
+        }
+        pendingUploads.forEach((it, idx) => {
+          const div = document.createElement('div');
+          div.className = 'preview-item';
+          div.innerHTML = `<img src="${escapeHtml(it.src)}" alt="${escapeHtml(it.name||'image')}" loading="lazy"><div class="rm" data-idx="${idx}" title="Remove">✕</div>`;
+          ownerGalleryList.appendChild(div);
+        });
+        $$('.preview-item .rm', ownerGalleryList).forEach(btn => btn.addEventListener('click', (e)=> {
+          const idx = Number(e.currentTarget.getAttribute('data-idx'));
+          pendingUploads.splice(idx,1);
+          previewPending();
+        }));
+      }
+
+      chooseFilesBtn.addEventListener('click', ()=> fileInput.click());
+      fileInput.addEventListener('change', (ev)=> {
+        const files = Array.from(ev.target.files || []);
+        handleFiles(files);
+        fileInput.value = '';
+      });
+
+      dropZone.addEventListener('click', ()=> fileInput.click());
+      dropZone.addEventListener('dragover', (e)=> { e.preventDefault(); dropZone.style.borderColor = 'rgba(11,99,165,0.18)'; });
+      dropZone.addEventListener('dragleave', ()=> { dropZone.style.borderColor = 'rgba(11,99,165,0.06)'; });
+      dropZone.addEventListener('drop', (e)=> {
+        e.preventDefault(); dropZone.style.borderColor = 'rgba(11,99,165,0.06)';
+        const files = Array.from(e.dataTransfer.files || []).filter(f=> f.type && f.type.startsWith('image/'));
+        handleFiles(files);
+      });
+
+      function handleFiles(fileList){
+        if(!fileList || fileList.length === 0) return;
+        fileList.forEach(file=>{
+          const reader = new FileReader();
+          reader.onload = function(ev){
+            const src = ev.target.result;
+            const item = { id: uid('g'), src, name: file.name || ('img_' + Date.now()), uploadedAt: new Date().toISOString(), owner: true };
+            pendingUploads.push(item);
+            previewPending();
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      addUrlBtn.addEventListener('click', ()=> {
+        const url = (imgUrlInput.value || '').trim();
+        if(!url) return toast('Enter an image URL');
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function(){
+          const item = { id: uid('g'), src: url, name: url.split('/').pop().split('?')[0] || ('img_' + Date.now()), uploadedAt: new Date().toISOString(), owner: true };
+          pendingUploads.push(item);
+          imgUrlInput.value = '';
+          previewPending();
+        };
+        img.onerror = function(){ toast('Image failed to load — check URL'); };
+        img.src = url;
+      });
+
+      clearPreviewBtn.addEventListener('click', ()=> { pendingUploads = []; previewPending(); });
+
+      uploadAllBtn.addEventListener('click', async ()=> {
+        if(pendingUploads.length === 0) return toast('No images to upload');
+        if(!await requireOwnerLogin()) return;
+        const gallery = DB.getGallery() || [];
+        const toSave = pendingUploads.map(p => ({ id: p.id, src: p.src, name: p.name || ('image_' + Date.now()), uploadedAt: p.uploadedAt || new Date().toISOString(), owner: true }));
+        const merged = gallery.concat(toSave);
+        DB.saveGallery(merged);
+        try{ if(bc) bc.postMessage('gallery_updated'); else localStorage.setItem('pilot_gallery_sync_ts', Date.now().toString()); }catch(e){}
+        toast('Uploaded to gallery');
+        pendingUploads = [];
+        previewPending();
+      });
+
+      // send a signal to refresh gallery on visitor pages
+      $('#refresh').addEventListener('click', ()=> { try{ if(bc) bc.postMessage('gallery_updated'); else localStorage.setItem('pilot_gallery_sync_ts', Date.now().toString()); }catch(e){}; toast('Gallery refresh signal sent'); });
+
+      // initialize preview area
+      previewPending();
+
+      // attempt to auto-log-in if ?access=portal and owner credentials exist (demo convenience)
+      (function tryAutoOpenLogin(){
+        try{
+          const sp = new URLSearchParams(location.search);
+          if(sp.get('access') === 'portal'){
+            // optional: show a friendly hint to login
+            // we do not automatically accept credentials for security; user must click login.
+            // show owner-status placeholder
+            $('#owner-status').textContent = 'Owner access allowed (click Login)';
+          }
+        } catch(e){}
+      })();
+
+    })();
+  </script>
+</body>
+</html>

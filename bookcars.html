@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pilot Travels — Cars (Favorites & Star Ratings)</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================================
+       THEME & BUTTON COLORS (Accessible Ocean) - minimal changes only
+       ========================================================================= */
+    :root{
+      --bg:#f6fbff; --card:#ffffff; --muted:#55606a; --text:#071827;
+      --accent:#0b63a5; --accent-2:#0b9bd8; --accent-700:#094f82; --accent-contrast:#ffffff;
+      --success:#059669; --danger:#d33f49;
+      --radius:14px; --shadow:0 18px 40px rgba(6,20,40,0.06); --container:1200px;
+    }
+
+    /* Button states */
+    .btn{
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: var(--accent-contrast);
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s;
+      box-shadow: 0 8px 22px rgba(6,20,40,0.12);
+      border-radius: 10px; border:0; padding:10px 14px; font-weight:700; cursor:pointer;
+    }
+    .btn:hover{ transform: translateY(-2px); box-shadow: 0 14px 34px rgba(6,20,40,0.16); }
+    .btn:active{ transform: translateY(0); opacity: .97; }
+    .btn[disabled]{ opacity:.5; cursor:not-allowed; box-shadow:none; filter:grayscale(.04) brightness(.98); }
+    .btn-ghost{ background:transparent;padding:10px 12px;border-radius:10px;border:1px solid rgba(11,99,165,0.06);cursor:pointer;font-weight:700;color:var(--accent-700); }
+    .btn-ghost:hover{ background: rgba(11,99,165,0.04); }
+    :focus{ outline: 3px solid rgba(11,99,165,0.12); outline-offset: 3px; border-radius: 8px; }
+
+    /* =========================================================================
+       LAYOUT + STYLES (kept consistent with your UI/UX)
+       ========================================================================= */
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}
+    a{color:var(--accent)}
+    .wrap{max-width:var(--container);margin:0 auto;padding:20px}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:center;padding:26px;border-radius:14px;background:linear-gradient(135deg, rgba(11,99,165,0.06), rgba(11,155,216,0.02));box-shadow:var(--shadow);margin-top:14px}
+    .hero h1{font-size:28px;margin:0}
+    .hero p{color:var(--muted);margin-top:8px}
+    .mini-card{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 12px 30px rgba(6,20,40,0.04)}
+
+    /* Controls */
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:18px}
+    input,select{padding:10px;border-radius:10px;border:1px solid rgba(11,99,165,0.06);background:var(--card);color:var(--text);}
+    .search{width:340px;min-width:150px}
+    .chip{padding:8px 10px;border-radius:10px;background:rgba(11,99,165,0.06);font-weight:700}
+
+    /* Grid & cards */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:18px}
+    .car{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);transition:transform .22s,box-shadow .22s;display:flex;flex-direction:column}
+    .car:hover{transform:translateY(-8px)}
+    .car-media{height:180px;overflow:hidden}
+    .car-media img{width:100%;height:100%;object-fit:cover;transition:transform .45s}
+    .car:hover .car-media img{transform:scale(1.05)}
+    .car-body{padding:12px;display:flex;flex-direction:column;gap:8px}
+    .meta{display:flex;justify-content:space-between;align-items:center}
+    .muted{color:var(--muted);font-size:13px}
+    .pill{padding:6px 8px;border-radius:999px;font-weight:800;font-size:12px}
+    .online{background:linear-gradient(90deg,#ecfff3,#ddf7e9);color:var(--success);border:1px solid rgba(5,150,105,0.08)}
+    .offline{background:#fff5f6;color:var(--danger);border:1px solid rgba(211,63,73,0.06)}
+
+    /* Actions + favorites */
+    .actions{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+    .fav-btn{font-size:18px;padding:8px 10px;border-radius:10px;border:1px solid rgba(11,99,165,0.06);background:transparent;cursor:pointer}
+    .fav-btn.saved{color:#e63946;border-color:rgba(230,57,70,0.12);}
+
+    /* Star rating styles (inline & in modal) */
+    .stars{display:inline-flex;gap:4px;align-items:center}
+    .star{font-size:18px;color:#d1d5db;cursor:pointer;transition:transform .12s;color:#e5e7eb}
+    .star.filled{color:#f6c244; text-shadow:0 1px 0 rgba(0,0,0,0.12)}
+    .star.readonly{cursor:default}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(6,12,20,0.5);display:none;align-items:center;justify-content:center;z-index:600;padding:12px}
+    .modal{width:100%;max-width:900px;background:var(--card);border-radius:12px;padding:18px;box-shadow:var(--shadow);max-height:90vh;overflow:auto}
+
+    /* toast */
+    .toast{position:fixed;right:18px;bottom:18px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:12px 16px;border-radius:12px;display:none;z-index:1100;box-shadow:0 12px 30px rgba(11,99,165,0.16)}
+
+    @media (max-width:980px){ .hero{grid-template-columns:1fr} .search{width:100%} }
+    @media (max-width:640px){ .car-body{padding:10px} }
+  </style>
+</head>
+<body>
+
+
+
+<!-- START: SHARED NAV (paste this immediately after <body>, replacing any existing <header> ... </header>) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+<header id="site-header" aria-label="Primary navigation">
+  <div class="nav-wrap">
+    <div class="brand">
+      <div class="logo">PT</div>
+      <div class="site-text">
+        <div class="site-title">Pilot Travels</div>
+        <div class="site-sub">Nagercoil · Kanyakumari</div>
+      </div>
+    </div>
+
+    <button id="nav-toggle" aria-expanded="false" aria-label="Open menu" class="nav-toggle">☰</button>
+
+    <nav id="main-nav" class="main-nav" aria-label="Main">
+      <a href="home.html" data-nav="home" class="nav-link"><span class="label">Home</span></a>
+      <a href="about.html" data-nav="about" class="nav-link"><span class="label">About</span></a>
+      <a href="bookcars.html" data-nav="bookcars" class="nav-link"><span class="label">Book Cars</span></a>
+      <a href="services.html" data-nav="services" class="nav-link"><span class="label">Services</span></a>
+      <a href="gallery.html" data-nav="gallery" class="nav-link"><span class="label">Gallery</span></a>
+      <a href="contact.html" data-nav="contact" class="nav-link"><span class="label">Contact</span></a>
+
+      <!-- sliding indicator -->
+      <div id="nav-indicator" aria-hidden="true"></div>
+    </nav>
+
+    <div class="nav-actions">
+      <button id="login-btn" class="btn-cta">Login / Book</button>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Compact header styles — Poppins used for labels */
+  :root{
+    --accent:#0b63a5; --accent2:#0b9bd8; --muted:#56646c; --white:#fff;
+    --glass: rgba(11,99,165,0.06); --shadow: 0 14px 40px rgba(6,20,40,0.08);
+  }
+  #site-header{position:sticky;top:0;z-index:1200;background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.94));backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,0.04)}
+  .nav-wrap{max-width:1200px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:var(--white);font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;box-shadow:0 8px 24px rgba(11,99,165,0.12)}
+  .site-title{font-family:'Poppins',sans-serif;font-weight:700}
+  .site-sub{font-size:13px;color:var(--muted)}
+
+  /* nav */
+  .main-nav{display:flex;gap:8px;align-items:center;position:relative;padding:6px}
+  .nav-link{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--muted);text-decoration:none;font-family:'Poppins',sans-serif;font-weight:600;transition:all .16s}
+  .nav-link:hover{background:var(--glass);transform:translateY(-3px);color:#052233}
+  .nav-link.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--white) !important;box-shadow:var(--shadow);transform:none}
+  #nav-indicator{position:absolute;bottom:-8px;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:left .22s ease,width .22s ease;box-shadow:0 10px 30px rgba(11,99,165,0.14);pointer-events:none}
+
+  /* actions */
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .btn-cta{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--white);padding:9px 12px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+
+  /* mobile */
+  .nav-toggle{display:none;background:transparent;border:0;font-size:20px;padding:8px;cursor:pointer}
+  @media (max-width:880px){
+    .nav-wrap{padding:10px}
+    .main-nav{position:fixed;left:8px;right:8px;top:72px;background:rgba(255,255,255,0.98);flex-direction:column;gap:6px;padding:12px;border-radius:10px;box-shadow:0 14px 30px rgba(6,20,40,0.06);transform:translateY(-8px);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s}
+    .main-nav.open{opacity:1;transform:translateY(0);pointer-events:auto}
+    .nav-toggle{display:inline-flex}
+    #nav-indicator{display:none}
+    .nav-link{width:calc(100% - 28px)}
+    .nav-actions{display:flex}
+  }
+
+  /* accessibility focus */
+  .nav-link:focus{outline:0;box-shadow:0 0 0 6px rgba(11,99,165,0.12)}
+</style>
+
+<script>
+(function(){
+  const nav = document.getElementById('main-nav');
+  const links = Array.from(nav.querySelectorAll('.nav-link'));
+  const indicator = document.getElementById('nav-indicator');
+  const toggle = document.getElementById('nav-toggle');
+  const loginBtn = document.getElementById('login-btn');
+
+  // Determine and set active link by current file or hash
+  function setActiveByLocation(){
+    const filename = (location.pathname || '').split('/').pop().toLowerCase() || 'home.html';
+    const fileBase = filename.replace(/\.html$/,'');
+    const hash = (location.hash || '').replace('#','').toLowerCase();
+
+    // clear
+    links.forEach(a => { a.classList.remove('active'); a.removeAttribute('aria-current'); });
+
+    // match by href filename
+    let match = links.find(a => {
+      const href = (a.getAttribute('href')||'').split('/').pop().toLowerCase();
+      if(!href) return false;
+      if(href === filename) return true;
+      if(href.replace(/\.html$/,'') === fileBase) return true;
+      return false;
+    });
+
+    // if hash present, prefer matching data-nav or hash target
+    if(hash){
+      const hashMatch = links.find(a => (a.dataset && a.dataset.nav && a.dataset.nav.toLowerCase() === hash) || ((a.getAttribute('href')||'').split('#').pop().toLowerCase() === hash));
+      if(hashMatch) match = hashMatch;
+    }
+
+    if(!match) match = links[0];
+    if(match){
+      match.classList.add('active');
+      match.setAttribute('aria-current','page');
+      moveIndicator(match);
+    }
+  }
+
+  // Move sliding indicator under element
+  function moveIndicator(el){
+    if(!indicator) return;
+    const r = el.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+    const left = r.left - navRect.left;
+    const width = r.width;
+    indicator.style.left = (left + 8) + 'px';
+    indicator.style.width = (width - 16) + 'px';
+  }
+
+  // Click behavior: for links to same-page anchors (#id) do smooth scroll
+  links.forEach(a => {
+    a.addEventListener('click', function(e){
+      // close mobile nav if open
+      if(nav.classList.contains('open')){ nav.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
+
+      // smooth-scroll if link contains a hash pointing to element on same page
+      const href = a.getAttribute('href') || '';
+      if(href.startsWith('#')){
+        e.preventDefault();
+        const id = href.slice(1);
+        const el = document.getElementById(id);
+        if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+        // set active visually
+        links.forEach(x => x.classList.remove('active'));
+        a.classList.add('active');
+        a.setAttribute('aria-current','page');
+        return;
+      }
+      // otherwise allow default (navigate or your injector will handle)
+    });
+
+    // keyboard activation
+    a.addEventListener('keydown', (ev) => { if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); a.click(); } });
+  });
+
+  // toggle mobile menu
+  toggle && toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  // ensure indicator repositions on resize/scroll
+  let t;
+  window.addEventListener('resize', ()=>{ clearTimeout(t); t=setTimeout(()=> { const active = nav.querySelector('.nav-link.active'); if(active) moveIndicator(active); }, 100); });
+  window.addEventListener('scroll', ()=> { const active = nav.querySelector('.nav-link.active'); if(active) moveIndicator(active); }, { passive:true });
+
+  // login button goes to booking page
+  loginBtn && loginBtn.addEventListener('click', ()=> { location.href = 'customer.html'; });
+
+  // initial set
+  setActiveByLocation();
+
+  // respond to history/hash changes
+  window.addEventListener('popstate', setActiveByLocation);
+  window.addEventListener('hashchange', setActiveByLocation);
+
+  // Expose hook for page scripts (optional): window.onNavReady = function(){ ... }
+  window.onNavReady = function(){ setActiveByLocation(); };
+
+  // SAFETY: prevent negative distance inputs anywhere on site
+  (function clampDistanceInputs(){
+    try{
+      const binds = (selector) => {
+        const els = Array.from(document.querySelectorAll(selector));
+        els.forEach(d => {
+          d.setAttribute('min', '0');
+          d.addEventListener('input', ()=> { if(Number(d.value) < 0) d.value = 0; });
+        });
+      };
+      // common id used in your pages
+      binds('#distance');
+      // also clamp any inputs that have data-distance attribute
+      binds('input[data-distance]');
+    }catch(e){ /* ignore */ }
+  })();
+
+})();
+</script>
+<!-- END: SHARED NAV -->
+
+
+
+
+
+  <div class="wrap">
+
+    <!-- HERO (kept same) -->
+    <section class="hero" aria-labelledby="cars-hero-title">
+      <div>
+        <h1 id="cars-hero-title">Premium fleet — pick the perfect ride</h1>
+        <p>Curated cars for city travel, family trips and outstation tours. Fast booking, verified drivers, transparent fares.</p>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" id="btn-book-quick">Book Quick</button>
+          <button class="btn-ghost" id="btn-explore">Explore Fleet</button>
+        </div>
+      </div>
+      <aside class="mini-card" aria-hidden="true">
+        <img src="https://images.unsplash.com/photo-1563720226303-3d0f0bff9f41?w=1200&q=80&auto=format&fit=crop" alt="Premium car" style="width:100%;border-radius:10px;height:240px;object-fit:cover">
+        <div style="margin-top:12px;font-weight:800">Find your ride</div>
+        <div class="muted" style="margin-top:6px">Handpicked vehicles with clear pricing.</div>
+      </aside>
+    </section>
+
+    <!-- CONTROLS (kept same) -->
+    <div class="controls" role="region" aria-label="Car filters">
+      <input id="search" class="search" placeholder="Search model or feature (e.g. Innova)" aria-label="Search cars">
+      <select id="type"><option value="all">All types</option><option value="economy">Economy</option><option value="sedan">Sedan</option><option value="minivan">Minivan</option><option value="suv">SUV</option></select>
+      <select id="seats"><option value="any">Any seats</option><option value="4">4</option><option value="5">5</option><option value="7">7</option></select>
+      <select id="sort"><option value="">Sort</option><option value="price-asc">Price ↑</option><option value="price-desc">Price ↓</option><option value="name-asc">Name A→Z</option></select>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button id="compare" class="chip">Compare (0)</button>
+        <button id="clearFilters" class="chip">Reset</button>
+      </div>
+    </div>
+
+    <!-- CAR GRID (main area) -->
+    <section class="grid" id="carsGrid" aria-live="polite"></section>
+
+    <footer style="margin-top:18px;text-align:center;color:var(--muted)">© Pilot Travels · Nagercoil — <a href="#">Contact</a></footer>
+  </div>
+
+  <!-- Modal & Toast -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true"><div id="modalRoot" class="modal" role="dialog" aria-modal="true"></div></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* =========================================================================
+       App script:
+         - Adds Favorites button (heart) persisted in localStorage (FAVS_KEY)
+         - Adds Star rating UI in car card (read-only average) and in details modal (interactive)
+         - Ratings are stored in the car object: car.reviews = [{id, user, rating, text, at}, ...]
+         - Preserves existing booking and filtering logic
+       Comments describe sections and functions for maintainability
+       ========================================================================= */
+
+    /* --------------------------
+       Storage keys and demo seed
+       -------------------------- */
+    const CARS_KEY = 'demo_cars_v2';             // master cars data (persisted)
+    const BOOKINGS_KEY = 'demo_bookings_v2';     // bookings & drafts
+    const FAVS_KEY = 'drive_favs_v2';            // favorites (array of car ids)
+
+    // Seed demo data if missing
+    if(!localStorage.getItem(CARS_KEY)){
+      const seed = [
+        { id:'c1', name:'Innova Crysta', images:['https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=1200&q=80&auto=format&fit=crop'], type:'minivan', seats:7, ratePerKm:22, dayPackage:2500, status:'online', ac:true, mileage:14, notes:'Spacious for family trips', reviews:[{id:'r1',user:'Priya',rating:5,text:'Excellent ride',at:new Date().toISOString()}] },
+        { id:'c2', name:'Maruti Dzire', images:['https://images.unsplash.com/photo-1542367597-94a3c31e40d0?w=1200&q=80&auto=format&fit=crop'], type:'sedan', seats:5, ratePerKm:15, dayPackage:1200, status:'online', ac:true, mileage:21, notes:'Comfortable city sedan', reviews:[{id:'r2',user:'Ravi',rating:4,text:'Good value',at:new Date().toISOString()}] },
+        { id:'c3', name:'Hyundai i10', images:['https://images.unsplash.com/photo-1511397676602-6a1b751c8cc3?w=1200&q=80&auto=format&fit=crop'], type:'economy', seats:4, ratePerKm:9, dayPackage:800, status:'online', ac:false, mileage:18, notes:'Compact & fuel-efficient', reviews:[] }
+      ];
+      localStorage.setItem(CARS_KEY, JSON.stringify(seed));
+    }
+    if(!localStorage.getItem(BOOKINGS_KEY)) localStorage.setItem(BOOKINGS_KEY, JSON.stringify([]));
+    if(!localStorage.getItem(FAVS_KEY)) localStorage.setItem(FAVS_KEY, JSON.stringify([]));
+
+    /* --------------------------
+       Utility helpers
+       -------------------------- */
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from((r||document).querySelectorAll(s));
+
+    // Escape HTML for safe injection
+    function escapeHtml(s){ return s ? String(s).replace(/[&<>"]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])) : ''; }
+
+    // Simple toast helper
+    function toast(msg, ms=2200){
+      const el = $('#toast');
+      el.textContent = msg;
+      el.style.display = 'block';
+      el.style.opacity = '1';
+      setTimeout(()=>{ el.style.transition='opacity .28s'; el.style.opacity='0'; setTimeout(()=> el.style.display='none', 360); }, ms);
+    }
+
+    // Unique id helper
+    function uid(pref='id'){ return pref + '_' + Date.now() + '_' + Math.floor(Math.random()*9000); }
+
+    /* --------------------------
+       Data access helpers (localStorage wrapper)
+       -------------------------- */
+    function getCars(){ try { return JSON.parse(localStorage.getItem(CARS_KEY) || '[]'); } catch(e){ return []; } }
+    function saveCars(arr){ localStorage.setItem(CARS_KEY, JSON.stringify(arr)); notifyOwnerIfNeeded('cars_updated'); }
+    function getBookings(){ try { return JSON.parse(localStorage.getItem(BOOKINGS_KEY) || '[]'); } catch(e){ return []; } }
+    function saveBookings(arr){ localStorage.setItem(BOOKINGS_KEY, JSON.stringify(arr)); notifyOwnerIfNeeded('bookings_updated'); }
+    function getFavs(){ try { return JSON.parse(localStorage.getItem(FAVS_KEY) || '[]'); } catch(e){ return []; } }
+    function saveFavs(arr){ localStorage.setItem(FAVS_KEY, JSON.stringify(arr)); }
+
+    // Broadcast helper for multi-tab sync (owner/customer)
+    function notifyOwnerIfNeeded(msg){
+      try{
+        if(typeof BroadcastChannel !== 'undefined'){ new BroadcastChannel('pilot_channel').postMessage(msg); }
+        else localStorage.setItem('pilot_sync_'+Date.now(), msg);
+      }catch(e){}
+    }
+
+    /* --------------------------
+       Star rating utilities
+       -------------------------- */
+
+    // Calculate average rating for a car (returns number 0-5)
+    function averageRating(car){
+      if(!car || !Array.isArray(car.reviews) || car.reviews.length === 0) return 0;
+      const sum = car.reviews.reduce((s,r)=>s + (Number(r.rating)||0), 0);
+      return Math.round((sum / car.reviews.length) * 10) / 10; // 1 decimal
+    }
+
+    // Render star markup given a rating (read-only)
+    function renderStars(avg){
+      // returns HTML with 5 stars; filled for <=avg
+      const full = Math.floor(avg);
+      const half = (avg - full) >= 0.5;
+      let html = '<span class="stars" aria-hidden="true">';
+      for(let i=1;i<=5;i++){
+        const filled = i <= full || (half && i === full+1);
+        html += `<span class="star ${filled ? 'filled readonly' : 'readonly'}" data-star="${i}">★</span>`;
+      }
+      html += `</span> <span class="muted" style="margin-left:6px">${avg > 0 ? avg : '—'}</span>`;
+      return html;
+    }
+
+    /* --------------------------
+       Render car grid
+       - each card shows average star rating and favorite heart button
+       -------------------------- */
+    function renderGrid(){
+      const cars = getCars();
+      // filter & sort
+      const q = ($('#search').value || '').trim().toLowerCase();
+      const t = $('#type').value;
+      const s = $('#seats').value;
+      const so = $('#sort').value;
+      let out = cars.slice();
+      if(t !== 'all') out = out.filter(c => c.type === t);
+      if(s !== 'any') out = out.filter(c => String(c.seats) === s);
+      if(q) out = out.filter(c => (c.name||'').toLowerCase().includes(q) || (c.notes||'').toLowerCase().includes(q));
+      // Customers only see online cars
+      out = out.filter(c => c.status === 'online');
+
+      if(so === 'price-asc') out.sort((a,b)=>a.ratePerKm - b.ratePerKm);
+      if(so === 'price-desc') out.sort((a,b)=>b.ratePerKm - a.ratePerKm);
+      if(so === 'name-asc') out.sort((a,b)=>a.name.localeCompare(b.name));
+
+      const grid = $('#carsGrid');
+      grid.innerHTML = '';
+      if(out.length === 0){ grid.innerHTML = '<div style="padding:18px;background:var(--card);border-radius:12px;color:var(--muted)">No cars available.</div>'; return; }
+
+      const favs = getFavs();
+      out.forEach(car => {
+        const avg = averageRating(car);
+        const card = document.createElement('article');
+        card.className = 'car fade-up';
+        card.innerHTML = `
+          <div class="car-media"><img src="${escapeHtml(car.images?.[0]||'')}" alt="${escapeHtml(car.name)}"></div>
+          <div class="car-body">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:800">${escapeHtml(car.name)}</div>
+                <div class="muted" style="margin-top:6px">${car.seats || '-'} seats • ${escapeHtml(car.type)}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:800;font-size:16px">₹${Number(car.ratePerKm)}/km</div>
+                <div style="margin-top:8px">${car.status==='online' ? '<span class="pill online">ONLINE</span>' : '<span class="pill offline">OFFLINE</span>'}</div>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <div class="muted">Mileage: ${car.mileage || '-'}</div>
+              <div id="stars-${car.id}">${renderStars(avg)}</div>
+            </div>
+
+            <div style="margin-top:8px;color:var(--muted)">${escapeHtml(car.notes)}</div>
+
+            <div class="actions">
+              <button class="btn" ${car.status!=='online' ? 'disabled' : ''} data-book="${car.id}">${car.status==='online' ? 'Book' : 'Unavailable'}</button>
+              <button class="btn-ghost" data-view="${car.id}">Details</button>
+              <button class="fav-btn ${favs.includes(car.id) ? 'saved' : ''}" data-fav="${car.id}" title="Save to favorites">${favs.includes(car.id) ? '♥' : '♡'}</button>
+              <label style="display:flex;align-items:center;gap:8px;margin-left:auto"><input type="checkbox" data-cmp="${car.id}"> Compare</label>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      // Wire event listeners for buttons
+      $$('button[data-book]').forEach(b => b.addEventListener('click', e => openBookingModal(e.currentTarget.dataset.book)));
+      $$('button[data-view]').forEach(b => b.addEventListener('click', e => openDetailsModal(e.currentTarget.dataset.view)));
+      $$('button[data-fav]').forEach(b => b.addEventListener('click', e => {
+        const id = e.currentTarget.dataset.fav;
+        toggleFavorite(id, e.currentTarget);
+      }));
+      // Compare checkboxes handled elsewhere optionally
+    }
+
+    /* --------------------------
+       Favorite toggling (persists in localStorage)
+       - FAVS_KEY stores array of car ids
+       -------------------------- */
+    function toggleFavorite(carId, btn){
+      let favs = getFavs();
+      if(favs.includes(carId)){
+        favs = favs.filter(x=>x!==carId);
+        btn.classList.remove('saved');
+        btn.textContent = '♡';
+        toast('Removed from favorites');
+      } else {
+        favs.push(carId);
+        btn.classList.add('saved');
+        btn.textContent = '♥';
+        toast('Added to favorites');
+      }
+      saveFavs(favs);
+    }
+
+    /* --------------------------
+       Modal helpers
+       -------------------------- */
+    function openModal(html){
+      const root = $('#modalRoot');
+      root.innerHTML = html;
+      $('#modalBackdrop').style.display = 'flex';
+      $('#modalBackdrop').setAttribute('aria-hidden','false');
+      $$('.modal-close').forEach(btn => btn.addEventListener('click', closeModal));
+      $('#modalBackdrop').addEventListener('click', backdropClick);
+    }
+    function closeModal(){
+      $('#modalRoot').innerHTML = '';
+      $('#modalBackdrop').style.display = 'none';
+      $('#modalBackdrop').setAttribute('aria-hidden','true');
+      $('#modalBackdrop').removeEventListener('click', backdropClick);
+    }
+    function backdropClick(e){ if(e.target === $('#modalBackdrop')) closeModal(); }
+
+    /* --------------------------
+       Booking modal (keeps previous logic: prevents negative km)
+       - For brevity we include a simple booking flow; bookings saved to BOOKINGS_KEY
+       -------------------------- */
+    function openBookingModal(carId){
+      const cars = getCars();
+      const car = cars.find(c=>c.id===carId);
+      if(!car) return toast('Car not found');
+
+      openModal(`
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3>Book ${escapeHtml(car.name)}</h3><button class="modal-close">✕</button>
+        </div>
+        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><label>Pickup</label><input id="bk-pick" placeholder="Pickup location" /></div>
+          <div><label>Drop</label><input id="bk-drop" placeholder="Drop location" /></div>
+          <div>
+            <label>Distance (km)</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button id="dist-minus" class="btn-ghost" type="button">−</button>
+              <input id="bk-dist" type="number" value="10" style="width:110px;padding:10px;border-radius:8px;border:1px solid rgba(11,99,165,0.06)"/>
+              <button id="dist-plus" class="btn-ghost" type="button">+</button>
+            </div>
+          </div>
+          <div><label>Passengers</label><input id="bk-pass" type="number" value="1" min="1" /></div>
+        </div>
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+          <div>Fare preview: <strong id="fare">₹0</strong></div>
+          <div style="display:flex;gap:8px"><button id="confirm-book" class="btn">Confirm</button><button class="btn-ghost modal-close">Cancel</button></div>
+        </div>
+      `);
+
+      // get modal elements
+      const dist = $('#bk-dist', $('#modalRoot'));
+      const minus = $('#dist-minus', $('#modalRoot'));
+      const plus = $('#dist-plus', $('#modalRoot'));
+      const fareEl = $('#fare', $('#modalRoot'));
+
+      // secure numeric input to prevent negatives and e/E etc.
+      function secureNumberInput(el, {min=0, decimals=2} = {}){
+        if(!el) return;
+        el.setAttribute('min', String(min));
+        el.addEventListener('keydown', (ev) => { if(ev.key === '-' || ev.key === 'e' || ev.key === 'E' || ev.key === '+') ev.preventDefault(); });
+        el.addEventListener('wheel', (ev) => { if(document.activeElement === el) ev.preventDefault(); }, {passive:false});
+        el.addEventListener('paste', (ev) => { const txt = (ev.clipboardData || window.clipboardData).getData('text'); if(txt.includes('-')) ev.preventDefault(); });
+        el.addEventListener('input', () => {
+          const v = el.value;
+          if(v === '') return;
+          let n = Number(v);
+          if(!isFinite(n) || Number.isNaN(n)){ el.value = ''; return; }
+          if(n < min) n = min;
+          if(decimals != null){ const f = Math.pow(10, decimals); n = Math.round(n * f) / f; }
+          el.value = String(n);
+        });
+        el.addEventListener('blur', () => {
+          if(el.value === '') el.value = String(min);
+          let n = Number(el.value);
+          if(!isFinite(n) || Number.isNaN(n)) n = min;
+          n = Math.max(n, min);
+          if(decimals != null){ const f = Math.pow(10, decimals); n = Math.round(n * f) / f; }
+          el.value = String(n);
+        });
+      }
+      secureNumberInput(dist, {min:0, decimals:2});
+
+      // stepper behaviour
+      const STEP = 0.5;
+      minus.addEventListener('click', ()=> { let v = parseFloat(dist.value)||0; v = Math.max(0, +(v - STEP).toFixed(2)); dist.value = v; recalc(); });
+      plus.addEventListener('click', ()=> { let v = parseFloat(dist.value)||0; v = +(v + STEP).toFixed(2); dist.value = v; recalc(); });
+
+      function recalc(){
+        const distance = Math.max(0, parseFloat(dist.value) || 0);
+        const fare = Math.round(distance * car.ratePerKm + (car.dayPackage||0));
+        fareEl.textContent = '₹' + fare;
+      }
+      dist.addEventListener('input', recalc); recalc();
+
+      // confirm booking: save booking object into BOOKINGS_KEY
+      $('#confirm-book', $('#modalRoot')).addEventListener('click', ()=>{
+        const pickup = $('#bk-pick', $('#modalRoot')).value || 'Unknown';
+        const drop = $('#bk-drop', $('#modalRoot')).value || 'Unknown';
+        const distance = Math.max(0, parseFloat(dist.value) || 0);
+        const fare = Math.round(distance * car.ratePerKm + (car.dayPackage||0));
+        const booking = { id:'b_'+Date.now(), carId:car.id, carName:car.name, pickup, drop, distance, fare, createdAt: new Date().toISOString(), status:'confirmed' };
+        const bs = getBookings(); bs.push(booking); saveBookings(bs);
+        toast('✅ Booking Confirmed! Details copied to clipboard (if allowed).');
+
+        // copy booking details to clipboard if possible
+        const txt = `Booking ${booking.id}\nCar: ${booking.carName}\nPickup: ${booking.pickup}\nDrop: ${booking.drop}\nDistance: ${booking.distance} km\nFare: ₹${booking.fare}`;
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(txt).catch(()=>{}); // ignore clipboard errors
+        }
+        closeModal();
+      });
+    }
+
+    /* --------------------------
+       Details modal with star rating (interactive)
+       - Users can click stars to set rating (1..5)
+       - Users can add a textual review; stored into car.reviews array
+       - After saving, car data is persisted (CARS_KEY) and grid updated
+       -------------------------- */
+    function openDetailsModal(carId){
+      const cars = getCars();
+      const car = cars.find(c=>c.id === carId);
+      if(!car) return toast('Car not found');
+
+      // render details modal with interactive star rating and review form
+      openModal(`
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3>${escapeHtml(car.name)}</h3><button class="modal-close">✕</button>
+        </div>
+        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <img src="${escapeHtml(car.images?.[0]||'')}" style="width:100%;height:260px;object-fit:cover;border-radius:8px" />
+            <div class="muted" style="margin-top:8px">${escapeHtml(car.notes||'')}</div>
+            <div style="margin-top:8px">Average rating: ${renderStars(averageRating(car))}</div>
+          </div>
+          <div>
+            <div style="font-weight:800">Give a rating</div>
+            <div style="margin-top:8px">
+              <div id="interactive-stars" class="stars" aria-label="Rate this car (1 to 5)"></div>
+            </div>
+            <div class="field" style="margin-top:10px">
+              <label class="muted">Your name (optional)</label>
+              <input id="rev-name" placeholder="Your name (Guest if empty)" />
+            </div>
+            <div class="field">
+              <label class="muted">Your review</label>
+              <textarea id="rev-text" rows="4" placeholder="Share a quick experience"></textarea>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="rev-save" class="btn">Submit Review</button>
+              <button class="btn-ghost modal-close">Close</button>
+            </div>
+
+            <div style="margin-top:12px"><strong>Reviews</strong><div id="reviews-list" style="margin-top:8px"></div></div>
+          </div>
+        </div>
+      `);
+
+      // initialize interactive star UI
+      const starsRoot = $('#interactive-stars', $('#modalRoot'));
+      let currentSelection = 5; // default to 5
+      function renderInteractiveStars(sel=0){
+        starsRoot.innerHTML = '';
+        for(let i=1;i<=5;i++){
+          const sp = document.createElement('span');
+          sp.className = 'star' + (i <= sel ? ' filled' : '');
+          sp.textContent = '★';
+          sp.dataset.val = i;
+          sp.addEventListener('mouseover', ()=> renderInteractiveStars(i));
+          sp.addEventListener('mouseout', ()=> renderInteractiveStars(currentSelection));
+          sp.addEventListener('click', ()=> { currentSelection = Number(sp.dataset.val); renderInteractiveStars(currentSelection); });
+          starsRoot.appendChild(sp);
+        }
+      }
+      renderInteractiveStars(currentSelection);
+
+      // render existing reviews list
+      function renderReviews(){
+        const rl = $('#reviews-list', $('#modalRoot'));
+        rl.innerHTML = '';
+        const reviews = car.reviews || [];
+        if(reviews.length === 0){ rl.innerHTML = '<div class="muted">No reviews yet</div>'; return; }
+        reviews.slice().reverse().forEach(r => {
+          const div = document.createElement('div');
+          div.style.padding='8px';
+          div.style.borderRadius='8px';
+          div.style.background='#f7fbff';
+          div.style.marginBottom='8px';
+          div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>${escapeHtml(r.user||'Guest')}</strong><div class="muted">${r.rating}/5</div></div><div class="muted" style="margin-top:6px">${escapeHtml(r.text||'')}</div><div style="margin-top:6px;font-size:12px;color:#9aa3ad">${new Date(r.at).toLocaleString()}</div>`;
+          rl.appendChild(div);
+        });
+      }
+      renderReviews();
+
+      // review save handler: validate, append to car.reviews, save cars
+      $('#rev-save', $('#modalRoot')).addEventListener('click', ()=> {
+        const name = $('#rev-name', $('#modalRoot')).value.trim() || 'Guest';
+        const text = $('#rev-text', $('#modalRoot')).value.trim();
+        const rating = Math.max(1, Math.min(5, Math.round(currentSelection || 5)));
+        const review = { id: uid('r'), user: name, rating, text, at: new Date().toISOString() };
+        car.reviews = car.reviews || [];
+        car.reviews.push(review);
+        // persist updated cars array
+        const all = getCars();
+        const idx = all.findIndex(c => c.id === car.id);
+        if(idx >= 0) all[idx] = car;
+        saveCars(all);
+        toast('Review saved — thanks!');
+        // update stars on the card (grid)
+        const gridStars = document.getElementById('stars-' + car.id);
+        if(gridStars) gridStars.innerHTML = renderStars(averageRating(car));
+        // update reviews list in modal
+        renderReviews();
+        // clear input
+        $('#rev-name', $('#modalRoot')).value = '';
+        $('#rev-text', $('#modalRoot')).value = '';
+      });
+    }
+
+    /* --------------------------
+       Event wiring, filters, compare & initial render
+       -------------------------- */
+    function applyFilters(){
+      renderGrid();
+    }
+    $('#search').addEventListener('input', applyFilters);
+    $('#type').addEventListener('change', applyFilters);
+    $('#seats').addEventListener('change', applyFilters);
+    $('#sort').addEventListener('change', applyFilters);
+    $('#clearFilters').addEventListener('click', ()=>{ $('#search').value=''; $('#type').value='all'; $('#seats').value='any'; $('#sort').value=''; applyFilters(); });
+
+    // compare checkbox logic: allow up to 2
+    document.addEventListener('change', (e)=>{
+      if(!e.target.matches('input[data-cmp]')) return;
+      const id = e.target.dataset.cmp;
+      const checked = e.target.checked;
+      const selected = $$('input[data-cmp]:checked').map(i => i.dataset.cmp);
+      if(selected.length > 2){ e.target.checked = false; alert('Compare up to 2 cars'); }
+      $('#compare').textContent = 'Compare (' + $$('input[data-cmp]:checked').length + ')';
+    });
+
+    // initial render
+    renderGrid();
+
+    // Listen for storage changes (owner toggles or multi-tab)
+    window.addEventListener('storage', (ev)=>{
+      if(ev.key === CARS_KEY || ev.key && ev.key.startsWith('pilot_sync_')) renderGrid();
+      if(ev.key === BOOKINGS_KEY) { /* bookings changed, owner can view; customer My Bookings if implemented */ }
+    });
+
+    // BroadcastChannel sync if available
+    if(typeof BroadcastChannel !== 'undefined'){
+      try{
+        const bc = new BroadcastChannel('pilot_channel');
+        bc.onmessage = (ev) => { if(ev.data === 'cars_updated') renderGrid(); if(ev.data === 'bookings_updated') {/*optional*/} };
+      }catch(e){}
+    }
+
+    /* --------------------------
+       Public small helpers for debugging / convenience
+       -------------------------- */
+    window.openDetailsModal = openDetailsModal;
+    window.openBookingModal = openBookingModal;
+    window.toggleFavorite = toggleFavorite;
+    window.renderGrid = renderGrid;
+
+    // Accessibility: close modal on Escape
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Services — Pilot Travels</title>
+
+  <!-- Improved typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /*
+      UX-focused services page
+      - Entire top tabular/topbar removed (per request)
+      - Accessible Ocean button palette
+      - Large touch targets, clear contrast, consistent radii
+      - Subtle elevation + hover animations
+      - No dark theme, no header/nav
+    */
+
+    :root{
+      --bg: #f6fbff;                 /* page bg */
+      --card: #ffffff;               /* card bg */
+      --text: #071827;               /* main text */
+      --muted: #55606a;              /* secondary text */
+      /* Accessible Ocean palette - primary CTA colors */
+      --accent: #0b63a5;
+      --accent-2: #0b9bd8;
+      --accent-700: #094f82;
+      --accent-contrast: #ffffff;
+      --success: #059669;
+      --danger: #d33f49;
+
+      --radius: 12px;
+      --shadow-sm: 0 8px 20px rgba(6,20,40,0.06);
+      --shadow-lg: 0 18px 44px rgba(6,20,40,0.08);
+
+      --container: 1100px;
+      --easing: cubic-bezier(.16,.84,.24,1);
+    }
+
+    /* base */
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans";}
+    a{color:var(--accent)}
+    .wrap{max-width:var(--container);margin:0 auto;padding:24px}
+
+    /* HERO (topbar removed) */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:center;padding:28px;border-radius:var(--radius);background:linear-gradient(180deg,#ffffff,rgba(11,155,216,0.03));box-shadow:var(--shadow-lg);margin-top:6px}
+    .hero h1{font-size:28px;margin:0;line-height:1.05}
+    .hero p{color:var(--muted);margin-top:10px;font-size:15px}
+
+    .cta-row{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+    /* primary and secondary buttons (consistent) */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:12px 16px;border-radius:12px;border:0;font-weight:700;
+      font-size:15px;color:var(--accent-contrast);
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      box-shadow: 0 10px 28px rgba(11,99,165,0.12);
+      cursor:pointer;transition:transform .14s var(--easing), box-shadow .14s var(--easing);
+    }
+    .btn:hover{ transform:translateY(-3px); box-shadow: 0 20px 50px rgba(11,99,165,0.16); }
+    .btn:active{ transform:translateY(-1px); opacity:.98; }
+    .btn[disabled]{ cursor:not-allowed; opacity:.55; transform:none; box-shadow:none; filter:grayscale(.02); }
+
+    .btn-ghost{
+      display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;
+      border:1px solid rgba(11,99,165,0.08);background:transparent;color:var(--accent-700);font-weight:700;cursor:pointer;
+    }
+    .btn-ghost:hover{ background: rgba(11,99,165,0.04); transform:translateY(-2px); }
+
+    .mini-card{background:var(--card);padding:12px;border-radius:10px;box-shadow:var(--shadow-sm)}
+
+    /* Grid & cards */
+    .services{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:18px}
+    .service-card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:12px;transition:transform .16s var(--easing), box-shadow .16s var(--easing)}
+    .service-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+    .service-visual{height:140px;border-radius:10px;overflow:hidden;flex-shrink:0}
+    .service-visual img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .service-card .title{font-weight:800;font-size:16px}
+    .service-card .desc{color:var(--muted);font-size:14px}
+
+    /* packages */
+    .packages{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+    .pkg{background:linear-gradient(180deg,var(--card), rgba(11,99,165,0.02));padding:16px;border-radius:12px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:10px}
+    .pkg .price{font-weight:800;font-size:18px;color:var(--accent-700)}
+
+    /* FAQ */
+    .faq{margin-top:22px}
+    .q{background:var(--card);padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.04);margin-bottom:10px;cursor:pointer;transition:transform .12s var(--easing)}
+    .q:hover{transform:translateY(-2px)}
+    .q h4{margin:0;display:flex;justify-content:space-between;align-items:center;font-size:15px}
+    .ans{padding:10px 12px;border-radius:8px;margin-top:8px;background:rgba(11,99,165,0.02);display:none;color:var(--muted)}
+
+    /* testimonials */
+    .testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:18px}
+    .testi{background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow-sm)}
+
+    /* CTA section */
+    .service-cta{display:flex;justify-content:space-between;align-items:center;padding:18px;border-radius:12px;background:linear-gradient(90deg, rgba(11,99,165,0.06), rgba(11,155,216,0.02));margin-top:18px;box-shadow:var(--shadow-sm)}
+    .service-cta .left{max-width:70%}
+    .service-cta .left strong{font-size:17px}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(6,12,20,0.48);display:none;align-items:center;justify-content:center;z-index:900;padding:12px}
+    .modal{width:100%;max-width:880px;background:var(--card);border-radius:12px;padding:20px;box-shadow:var(--shadow-lg);max-height:88vh;overflow:auto}
+    .modal .modal-close{background:transparent;border:0;font-size:18px;color:var(--muted);cursor:pointer;padding:6px}
+
+    /* toast */
+    .toast{position:fixed;right:18px;bottom:18px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:var(--accent-contrast);padding:12px 16px;border-radius:12px;display:none;z-index:1100;box-shadow:0 12px 30px rgba(11,99,165,0.18)}
+
+    /* smaller screens */
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr}
+      .service-visual{height:160px}
+    }
+    @media (max-width:640px){
+      .wrap{padding:18px}
+      .btn{padding:10px 12px;font-size:14px}
+      .hero h1{font-size:22px}
+    }
+
+    /* accessibility: keyboard focus */
+    :focus{outline:3px solid rgba(11,155,216,0.12);outline-offset:3px;border-radius:8px}
+  </style>
+</head>
+<body>
+
+
+<!-- START: SHARED NAV (paste this immediately after <body>, replacing any existing <header> ... </header>) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+<header id="site-header" aria-label="Primary navigation">
+  <div class="nav-wrap">
+    <div class="brand">
+      <div class="logo">PT</div>
+      <div class="site-text">
+        <div class="site-title">Pilot Travels</div>
+        <div class="site-sub">Nagercoil · Kanyakumari</div>
+      </div>
+    </div>
+
+    <button id="nav-toggle" aria-expanded="false" aria-label="Open menu" class="nav-toggle">☰</button>
+
+    <nav id="main-nav" class="main-nav" aria-label="Main">
+      <a href="home.html" data-nav="home" class="nav-link"><span class="label">Home</span></a>
+      <a href="about.html" data-nav="about" class="nav-link"><span class="label">About</span></a>
+      <a href="bookcars.html" data-nav="bookcars" class="nav-link"><span class="label">Book Cars</span></a>
+      <a href="services.html" data-nav="services" class="nav-link"><span class="label">Services</span></a>
+      <a href="gallery.html" data-nav="gallery" class="nav-link"><span class="label">Gallery</span></a>
+      <a href="contact.html" data-nav="contact" class="nav-link"><span class="label">Contact</span></a>
+
+      <!-- sliding indicator -->
+      <div id="nav-indicator" aria-hidden="true"></div>
+    </nav>
+
+    <div class="nav-actions">
+      <button id="login-btn" class="btn-cta">Login / Book</button>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Compact header styles — Poppins used for labels */
+  :root{
+    --accent:#0b63a5; --accent2:#0b9bd8; --muted:#56646c; --white:#fff;
+    --glass: rgba(11,99,165,0.06); --shadow: 0 14px 40px rgba(6,20,40,0.08);
+  }
+  #site-header{position:sticky;top:0;z-index:1200;background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.94));backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,0.04)}
+  .nav-wrap{max-width:1200px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:var(--white);font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;box-shadow:0 8px 24px rgba(11,99,165,0.12)}
+  .site-title{font-family:'Poppins',sans-serif;font-weight:700}
+  .site-sub{font-size:13px;color:var(--muted)}
+
+  /* nav */
+  .main-nav{display:flex;gap:8px;align-items:center;position:relative;padding:6px}
+  .nav-link{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--muted);text-decoration:none;font-family:'Poppins',sans-serif;font-weight:600;transition:all .16s}
+  .nav-link:hover{background:var(--glass);transform:translateY(-3px);color:#052233}
+  .nav-link.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--white) !important;box-shadow:var(--shadow);transform:none}
+  #nav-indicator{position:absolute;bottom:-8px;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:left .22s ease,width .22s ease;box-shadow:0 10px 30px rgba(11,99,165,0.14);pointer-events:none}
+
+  /* actions */
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .btn-cta{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--white);padding:9px 12px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+
+  /* mobile */
+  .nav-toggle{display:none;background:transparent;border:0;font-size:20px;padding:8px;cursor:pointer}
+  @media (max-width:880px){
+    .nav-wrap{padding:10px}
+    .main-nav{position:fixed;left:8px;right:8px;top:72px;background:rgba(255,255,255,0.98);flex-direction:column;gap:6px;padding:12px;border-radius:10px;box-shadow:0 14px 30px rgba(6,20,40,0.06);transform:translateY(-8px);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s}
+    .main-nav.open{opacity:1;transform:translateY(0);pointer-events:auto}
+    .nav-toggle{display:inline-flex}
+    #nav-indicator{display:none}
+    .nav-link{width:calc(100% - 28px)}
+    .nav-actions{display:flex}
+  }
+
+  /* accessibility focus */
+  .nav-link:focus{outline:0;box-shadow:0 0 0 6px rgba(11,99,165,0.12)}
+</style>
+
+<script>
+(function(){
+  const nav = document.getElementById('main-nav');
+  const links = Array.from(nav.querySelectorAll('.nav-link'));
+  const indicator = document.getElementById('nav-indicator');
+  const toggle = document.getElementById('nav-toggle');
+  const loginBtn = document.getElementById('login-btn');
+
+  // Determine and set active link by current file or hash
+  function setActiveByLocation(){
+    const filename = (location.pathname || '').split('/').pop().toLowerCase() || 'home.html';
+    const fileBase = filename.replace(/\.html$/,'');
+    const hash = (location.hash || '').replace('#','').toLowerCase();
+
+    // clear
+    links.forEach(a => { a.classList.remove('active'); a.removeAttribute('aria-current'); });
+
+    // match by href filename
+    let match = links.find(a => {
+      const href = (a.getAttribute('href')||'').split('/').pop().toLowerCase();
+      if(!href) return false;
+      if(href === filename) return true;
+      if(href.replace(/\.html$/,'') === fileBase) return true;
+      return false;
+    });
+
+    // if hash present, prefer matching data-nav or hash target
+    if(hash){
+      const hashMatch = links.find(a => (a.dataset && a.dataset.nav && a.dataset.nav.toLowerCase() === hash) || ((a.getAttribute('href')||'').split('#').pop().toLowerCase() === hash));
+      if(hashMatch) match = hashMatch;
+    }
+
+    if(!match) match = links[0];
+    if(match){
+      match.classList.add('active');
+      match.setAttribute('aria-current','page');
+      moveIndicator(match);
+    }
+  }
+
+  // Move sliding indicator under element
+  function moveIndicator(el){
+    if(!indicator) return;
+    const r = el.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+    const left = r.left - navRect.left;
+    const width = r.width;
+    indicator.style.left = (left + 8) + 'px';
+    indicator.style.width = (width - 16) + 'px';
+  }
+
+  // Click behavior: for links to same-page anchors (#id) do smooth scroll
+  links.forEach(a => {
+    a.addEventListener('click', function(e){
+      // close mobile nav if open
+      if(nav.classList.contains('open')){ nav.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
+
+      // smooth-scroll if link contains a hash pointing to element on same page
+      const href = a.getAttribute('href') || '';
+      if(href.startsWith('#')){
+        e.preventDefault();
+        const id = href.slice(1);
+        const el = document.getElementById(id);
+        if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+        // set active visually
+        links.forEach(x => x.classList.remove('active'));
+        a.classList.add('active');
+        a.setAttribute('aria-current','page');
+        return;
+      }
+      // otherwise allow default (navigate or your injector will handle)
+    });
+
+    // keyboard activation
+    a.addEventListener('keydown', (ev) => { if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); a.click(); } });
+  });
+
+  // toggle mobile menu
+  toggle && toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  // ensure indicator repositions on resize/scroll
+  let t;
+  window.addEventListener('resize', ()=>{ clearTimeout(t); t=setTimeout(()=> { const active = nav.querySelector('.nav-link.active'); if(active) moveIndicator(active); }, 100); });
+  window.addEventListener('scroll', ()=> { const active = nav.querySelector('.nav-link.active'); if(active) moveIndicator(active); }, { passive:true });
+
+  // login button goes to booking page
+  loginBtn && loginBtn.addEventListener('click', ()=> { location.href = 'customer.html'; });
+
+  // initial set
+  setActiveByLocation();
+
+  // respond to history/hash changes
+  window.addEventListener('popstate', setActiveByLocation);
+  window.addEventListener('hashchange', setActiveByLocation);
+
+  // Expose hook for page scripts (optional): window.onNavReady = function(){ ... }
+  window.onNavReady = function(){ setActiveByLocation(); };
+
+  // SAFETY: prevent negative distance inputs anywhere on site
+  (function clampDistanceInputs(){
+    try{
+      const binds = (selector) => {
+        const els = Array.from(document.querySelectorAll(selector));
+        els.forEach(d => {
+          d.setAttribute('min', '0');
+          d.addEventListener('input', ()=> { if(Number(d.value) < 0) d.value = 0; });
+        });
+      };
+      // common id used in your pages
+      binds('#distance');
+      // also clamp any inputs that have data-distance attribute
+      binds('input[data-distance]');
+    }catch(e){ /* ignore */ }
+  })();
+
+})();
+</script>
+<!-- END: SHARED NAV -->
+
+
+
+
+  <div class="wrap">
+
+    <!-- TOP TABULAR / TOPBAR REMOVED COMPLETELY AS REQUESTED -->
+
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="services-hero">
+      <div>
+        <h1 id="services-hero">Our services — tailored to every trip</h1>
+        <p>From quick airport transfers to multi-day outstation tours, we offer transparent pricing and well-maintained vehicles for every need.</p>
+
+        <div class="cta-row">
+          <button class="btn" id="bookService">Book a Service</button>
+          <button class="btn-ghost" id="see-services">See services</button>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+          <div class="mini-card" style="min-width:160px">
+            <strong>Reliable Drivers</strong>
+            <div class="muted">Vetted & local</div>
+          </div>
+          <div class="mini-card" style="min-width:160px">
+            <strong>Transparent Fares</strong>
+            <div class="muted">Per km & day packages</div>
+          </div>
+        </div>
+      </div>
+
+      <aside style="border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);background:var(--card)">
+        <img src="https://images.unsplash.com/photo-1511914265874-1a7a5a2c1d1f?w=1400&q=80&auto=format&fit=crop" alt="Service visual" style="width:100%;height:320px;object-fit:cover;display:block">
+        <div style="padding:14px">
+          <div style="font-weight:800">Comfort & safety first</div>
+          <div class="muted" style="margin-top:8px">Our drivers follow sanitization & safety guidelines for worry-free travel.</div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- SERVICES GRID -->
+    <section id="servicesGrid" class="services" aria-label="Services">
+      <article class="service-card">
+        <div class="service-visual"><img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1200&q=80&auto=format&fit=crop" alt="Airport transfer"></div>
+        <div class="title">Airport Transfers</div>
+        <div class="desc">Punctual pickup/drop with flight tracking and meet & greet service.</div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn" onclick="openPackage('Airport Transfers', '₹800 - ₹1500')">Book</button>
+          <button class="btn-ghost" onclick="openDetails('Airport Transfers')">Details</button>
+        </div>
+      </article>
+
+      <article class="service-card">
+        <div class="service-visual"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&q=80&auto=format&fit=crop" alt="Day tours"></div>
+        <div class="title">Day Tours</div>
+        <div class="desc">Customizable day tours to nearby attractions with flexible timings.</div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn" onclick="openPackage('Day Tours', '₹1500 / day')">Book</button>
+          <button class="btn-ghost" onclick="openDetails('Day Tours')">Details</button>
+        </div>
+      </article>
+
+      <article class="service-card">
+        <div class="service-visual"><img src="https://images.unsplash.com/photo-1541446654331-1d0be0d8e6f8?w=1200&q=80&auto=format&fit=crop" alt="Hourly hire"></div>
+        <div class="title">Hourly Rentals</div>
+        <div class="desc">Hire by the hour for errands, meetings or city travel.</div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn" onclick="openPackage('Hourly Rentals', '₹150 / hour')">Book</button>
+          <button class="btn-ghost" onclick="openDetails('Hourly Rentals')">Details</button>
+        </div>
+      </article>
+
+      <article class="service-card">
+        <div class="service-visual"><img src="https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=1200&q=80&auto=format&fit=crop" alt="Outstation"></div>
+        <div class="title">Outstation Trips</div>
+        <div class="desc">Multi-day packages and driver-friendly itineraries for long-distance travel.</div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn" onclick="openPackage('Outstation', 'Custom pricing')">Book</button>
+          <button class="btn-ghost" onclick="openDetails('Outstation')">Details</button>
+        </div>
+      </article>
+
+      <article class="service-card">
+        <div class="service-visual"><img src="https://images.unsplash.com/photo-1519741491658-1d4f1b7e5c4a?w=1200&q=80&auto=format&fit=crop" alt="Corporate"></div>
+        <div class="title">Corporate Travel</div>
+        <div class="desc">Monthly billing, corporate accounts and priority support.</div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn" onclick="openPackage('Corporate Travel', 'Contact for pricing')">Contact</button>
+          <button class="btn-ghost" onclick="openDetails('Corporate Travel')">Details</button>
+        </div>
+      </article>
+
+      <article class="service-card">
+        <div class="service-visual"><img src="https://images.unsplash.com/photo-1571607385677-54d12f1f0f1f?w=1200&q=80&auto=format&fit=crop" alt="Wedding"></div>
+        <div class="title">Wedding & Events</div>
+        <div class="desc">Group transport and event logistics — elegant cars & timely service.</div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn" onclick="openPackage('Wedding & Events', 'Custom pricing')">Enquire</button>
+          <button class="btn-ghost" onclick="openDetails('Wedding & Events')">Details</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- PACKAGES -->
+    <section style="margin-top:20px">
+      <h2 style="margin:0 0 12px 0">Popular packages</h2>
+      <div class="packages">
+        <div class="pkg">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>City Comfort</strong><div class="muted">For quick city trips</div></div>
+            <div class="price">₹9/km</div>
+          </div>
+          <div class="muted">AC hatchbacks, ideal for short rides.</div>
+          <div style="margin-top:10px"><button class="btn" onclick="openPackage('City Comfort', '₹9/km')">Book</button></div>
+        </div>
+
+        <div class="pkg">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Family Day</strong><div class="muted">Day package for family</div></div>
+            <div class="price">₹1500 / day</div>
+          </div>
+          <div class="muted">Spacious MPV with luggage space.</div>
+          <div style="margin-top:10px"><button class="btn" onclick="openPackage('Family Day', '₹1500/day')">Book</button></div>
+        </div>
+
+        <div class="pkg">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong>Outstation Saver</strong><div class="muted">Long distance plan</div></div>
+            <div class="price">Custom</div>
+          </div>
+          <div class="muted">Driver allowances and trip planning included.</div>
+          <div style="margin-top:10px"><button class="btn" onclick="openPackage('Outstation Saver', 'Custom')">Enquire</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ + Testimonials -->
+    <section style="margin-top:22px">
+      <div style="display:grid;grid-template-columns:1fr 360px;gap:18px">
+        <div>
+          <h2 style="margin:0 0 12px 0">FAQ</h2>
+          <div class="faq" id="faq">
+            <div class="q" data-q="1"><h4>How do I book?<span>+</span></h4><div class="ans">Use Book buttons to open a booking form, enter pickup/drop and confirm. You can also call/WhatsApp us.</div></div>
+            <div class="q" data-q="2"><h4>Are drivers verified?<span>+</span></h4><div class="ans">Yes — every driver undergoes ID verification and training.</div></div>
+            <div class="q" data-q="3"><h4>What about cancellations?<span>+</span></h4><div class="ans">Cancellation rules vary by package — check the package or contact support for details.</div></div>
+          </div>
+        </div>
+
+        <aside>
+          <h3 style="margin-top:0">What customers say</h3>
+          <div class="testimonials">
+            <div class="testi"><strong>Priya K.</strong><div class="muted" style="margin-top:6px">“Clean cars and friendly driver. Made our family trip easy.”</div></div>
+            <div class="testi"><strong>Ravi P.</strong><div class="muted" style="margin-top:6px">“Excellent airport pickup — right on time.”</div></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="service-cta" aria-label="Call to action">
+      <div class="left">
+        <div style="font-weight:800">Ready to plan your trip?</div>
+        <div class="muted" style="margin-top:6px">We’ll suggest the best car and package based on your route.</div>
+      </div>
+      <div><button class="btn" id="cta-book">Book Now</button></div>
+    </section>
+
+    <footer style="margin-top:28px;color:var(--muted);text-align:center">© Pilot Travels · Nagercoil</footer>
+
+  </div>
+
+  <!-- Modal (booking & details) -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div id="modalRoot" class="modal" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* Modal and booking JS (kept functionally the same; error-free)
+       - openPackage uses a properly closed template literal
+       - booking saves into localStorage 'demo_bookings_v2'
+       - FAQ accordion, event wiring, and accessibility preserved
+       - Topbar removed so no references to header elements are used
+    */
+
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalRoot = document.getElementById('modalRoot');
+    const toastEl = document.getElementById('toast');
+
+    function openModal(html, options = {}) {
+      modalRoot.innerHTML = html;
+      modalBackdrop.style.display = 'flex';
+      modalBackdrop.setAttribute('aria-hidden', 'false');
+      // wire close buttons in modal
+      Array.from(modalRoot.querySelectorAll('.modal-close')).forEach(b => b.addEventListener('click', closeModal));
+      modalBackdrop.addEventListener('click', backdropClose);
+      if (options.onOpen) options.onOpen();
+    }
+
+    function closeModal() {
+      modalRoot.innerHTML = '';
+      modalBackdrop.style.display = 'none';
+      modalBackdrop.setAttribute('aria-hidden', 'true');
+      modalBackdrop.removeEventListener('click', backdropClose);
+    }
+
+    function backdropClose(e) { if (e.target === modalBackdrop) closeModal(); }
+
+    function showToast(msg, ms = 2000) {
+      toastEl.textContent = msg;
+      toastEl.style.display = 'block';
+      toastEl.style.opacity = '1';
+      setTimeout(() => { toastEl.style.transition = 'opacity .28s'; toastEl.style.opacity = '0'; setTimeout(() => toastEl.style.display = 'none', 340); }, ms);
+    }
+
+    // Fixed/clean openPackage (replaces broken template use)
+    function openPackage(title, price) {
+      const html = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0">${title}</h3>
+          <button class="modal-close">Close</button>
+        </div>
+
+        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><label>Pickup</label><input id="bk-pick" placeholder="Pickup location" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"></div>
+          <div><label>Drop</label><input id="bk-drop" placeholder="Drop location" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"></div>
+          <div><label>Start</label><input id="bk-start" type="datetime-local" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"></div>
+          <div><label>End</label><input id="bk-end" type="datetime-local" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"></div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+          <div><strong>${price}</strong></div>
+          <div style="display:flex;gap:8px">
+            <button id="confirm-book" class="btn">Confirm</button>
+            <button class="btn-ghost modal-close">Cancel</button>
+          </div>
+        </div>
+      `;
+      openModal(html, {
+        onOpen: () => {
+          const confirmEl = document.getElementById('confirm-book');
+          if (!confirmEl) return;
+          confirmEl.addEventListener('click', () => {
+            const pickup = modalRoot.querySelector('#bk-pick').value || 'Unknown';
+            const drop = modalRoot.querySelector('#bk-drop').value || 'Unknown';
+            const booking = { id: 'b_' + Date.now(), service: title, pickup, drop, price, createdAt: new Date().toISOString() };
+            const bs = JSON.parse(localStorage.getItem('demo_bookings_v2') || '[]');
+            bs.push(booking);
+            localStorage.setItem('demo_bookings_v2', JSON.stringify(bs));
+            showToast('Booking confirmed — we will contact you shortly.');
+            closeModal();
+          });
+        }
+      });
+    }
+
+    function openDetails(name) {
+      const html = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0">${name}</h3>
+          <button class="modal-close">Close</button>
+        </div>
+        <div style="margin-top:12px">
+          <p class="muted">Detailed information about ${name}. Contact us for customization and group rates.</p>
+          <div style="margin-top:12px">
+            <button class="btn" onclick="openPackage('${name}', 'Contact for pricing')">Enquire</button>
+            <button class="btn-ghost modal-close" style="margin-left:8px">Close</button>
+          </div>
+        </div>
+      `;
+      openModal(html);
+    }
+
+    // FAQ accordion
+    document.querySelectorAll('.q').forEach(q => {
+      q.addEventListener('click', () => {
+        const ans = q.querySelector('.ans');
+        const open = ans.style.display === 'block';
+        document.querySelectorAll('.faq .ans').forEach(a => a.style.display = 'none');
+        if (!open) ans.style.display = 'block';
+      });
+    });
+
+    // CTA wiring
+    const bookBtn = document.getElementById('bookService');
+    if(bookBtn) bookBtn.addEventListener('click', () => openPackage('Custom Service', 'Contact for pricing'));
+    const ctaBtn = document.getElementById('cta-book');
+    if(ctaBtn) ctaBtn.addEventListener('click', () => openPackage('Any Service', 'Contact for pricing'));
+    const seeBtn = document.getElementById('see-services');
+    if (seeBtn) seeBtn.addEventListener('click', () => document.getElementById('servicesGrid').scrollIntoView({ behavior: 'smooth' }));
+
+    // Accessibility: ESC closes modal
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // show toast when storage changes for bookings (helpful across tabs)
+    window.addEventListener('storage', (ev) => {
+      if (ev.key === 'demo_bookings_v2') {
+        showToast('Bookings updated', 1200);
+      }
+    });
+  </script>
+</body>
+</html>

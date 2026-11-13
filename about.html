@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About Us — Pilot Travels</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+   <style>
+    :root{
+      --bg: #f4fbff;
+      --card: #ffffff;
+      --muted: #55606a;
+      --text: #052233;
+      --accent: #0b63a5;
+      --accent-2: #0b9bd8;
+      --accent-soft: rgba(11,99,165,0.08);
+      --glass: rgba(11,99,165,0.06);
+      --radius: 14px;
+      --shadow: 0 18px 40px rgba(6,20,40,0.06);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+    a{color:inherit}
+    img{display:block;max-width:100%}
+
+    /* Top nav (single fixed nav, no overlap) */
+    header{position:sticky;top:0;z-index:1000;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.92));backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,0.04)}
+    .wrap{max-width:1200px;margin:0 auto;padding:18px}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-family:Poppins;font-weight:700}
+    .site-title{line-height:1;}
+    .site-title strong{display:block;font-family:Poppins;font-weight:700}
+    nav.primary{display:flex;gap:14px;align-items:center}
+    nav.primary a{padding:10px 14px;border-radius:10px;font-weight:600;color:var(--muted);text-decoration:none;transition:all .18s}
+    nav.primary a:hover{background:var(--glass);color:var(--text);transform:translateY(-2px)}
+    nav.primary a.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;box-shadow:var(--shadow)}
+    .nav-actions{display:flex;gap:10px;align-items:center}
+    .btn-cta{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:10px 14px;border-radius:12px;border:0;font-weight:700;cursor:pointer;box-shadow:var(--shadow)}
+    .btn-ghost{background:transparent;border:1px solid rgba(11,99,165,0.08);padding:8px 10px;border-radius:10px}
+
+    /* offset for smooth scroll to account for sticky header */
+    section[id]{scroll-margin-top:94px; /* adjust if header height changes */ }
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:center;padding:28px;margin-top:18px;border-radius:16px;background:linear-gradient(180deg,#ffffff, #f3f9ff);box-shadow:var(--shadow)}
+    @media (max-width:980px){ .hero{grid-template-columns:1fr; padding:20px} .nav .site-title{display:none} }
+    .hero-left h1{font-family:Poppins;font-size:34px;margin:0;line-height:1.05}
+    .kicker{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg, rgba(11,99,165,0.08), rgba(11,155,216,0.04));font-weight:700;color:var(--accent);margin-bottom:12px}
+    .hero p.lead{margin:12px 0 0;color:var(--muted);font-size:15px;max-width:60ch}
+    .hero-cta{margin-top:18px;display:flex;gap:12px;align-items:center}
+    .hero-cta .secondary{background:transparent;border:1px solid rgba(11,99,165,0.08);padding:10px 12px;border-radius:12px}
+
+    /* right hero visuals */
+    .hero-right{border-radius:12px;overflow:hidden;display:grid;grid-template-rows:1fr auto;gap:12px}
+    .visual-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .visual-grid img{height:140px;object-fit:cover;border-radius:10px}
+    .visual-bottom{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px}
+
+    /* Book Cars section */
+    .book-section{margin-top:18px;background:linear-gradient(180deg,#fff,#f6fbff);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+    .book-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center}
+    @media (max-width:900px){ .book-grid{grid-template-columns:1fr} }
+    .book-card{background:var(--card);padding:12px;border-radius:12px;border:1px solid rgba(11,99,165,0.03)}
+
+    /* Services / About / Gallery / Contact preview blocks */
+    .section{margin-top:18px;display:grid;grid-template-columns:1fr 360px;gap:18px}
+    @media (max-width:1000px){ .section{grid-template-columns:1fr} }
+    .section .panel{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow)}
+
+    /* Gallery grid */
+    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+    @media (max-width:900px){ .gallery-grid{grid-template-columns:repeat(2,1fr)} }
+    .gallery-grid img{height:150px;object-fit:cover;border-radius:10px;transition:transform .24s}
+    .gallery-grid img:hover{transform:scale(1.03)}
+
+    /* Reviews carousel */
+    .reviews{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+    .carousel{position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(180deg,#fff,#f6fbff);padding:12px;box-shadow:var(--shadow)}
+    .slides{display:flex;transition:transform .45s ease}
+    .slide{min-width:100%;padding:12px;display:flex;gap:12px;align-items:center}
+    .avatar{width:64px;height:64px;border-radius:999px;flex-shrink:0;overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .slide .quote{font-style:normal;color:var(--muted)}
+    .carousel-controls{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:8px}
+    .ctrl{background:rgba(0,0,0,0.06);border:none;padding:8px;border-radius:8px;cursor:pointer}
+
+    /* floating Book Now */
+    .floating-cta{position:fixed;right:18px;bottom:18px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:12px 16px;border-radius:999px;box-shadow:0 18px 40px rgba(11,99,165,0.28);font-weight:800;cursor:pointer;z-index:400}
+
+    footer{margin-top:28px;color:var(--muted);text-align:center;font-size:13px;padding-bottom:40px}
+
+    .muted{color:var(--muted)}
+    .tiny{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+
+
+
+
+<!-- START: SHARED NAV (paste this immediately after <body>, replacing any existing <header> ... </header>) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+<header id="site-header" aria-label="Primary navigation">
+  <div class="nav-wrap">
+    <div class="brand">
+      <div class="logo">PT</div>
+      <div class="site-text">
+        <div class="site-title">Pilot Travels</div>
+        <div class="site-sub">Nagercoil · Kanyakumari</div>
+      </div>
+    </div>
+
+    <button id="nav-toggle" aria-expanded="false" aria-label="Open menu" class="nav-toggle">☰</button>
+
+    <nav id="main-nav" class="main-nav" aria-label="Main">
+      <a href="home.html" data-nav="home" class="nav-link"><span class="label">Home</span></a>
+      <a href="about.html" data-nav="about" class="nav-link"><span class="label">About</span></a>
+      <a href="bookcars.html" data-nav="bookcars" class="nav-link"><span class="label">Book Cars</span></a>
+      <a href="services.html" data-nav="services" class="nav-link"><span class="label">Services</span></a>
+      <a href="gallery.html" data-nav="gallery" class="nav-link"><span class="label">Gallery</span></a>
+      <a href="contact.html" data-nav="contact" class="nav-link"><span class="label">Contact</span></a>
+
+      <!-- sliding indicator -->
+      <div id="nav-indicator" aria-hidden="true"></div>
+    </nav>
+
+    <div class="nav-actions">
+      <button id="login-btn" class="btn-cta">Login / Book</button>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Compact header styles — Poppins used for labels */
+  :root{
+    --accent:#0b63a5; --accent2:#0b9bd8; --muted:#56646c; --white:#fff;
+    --glass: rgba(11,99,165,0.06); --shadow: 0 14px 40px rgba(6,20,40,0.08);
+  }
+  #site-header{position:sticky;top:0;z-index:1200;background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.94));backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,0.04)}
+  .nav-wrap{max-width:1200px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:var(--white);font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;box-shadow:0 8px 24px rgba(11,99,165,0.12)}
+  .site-title{font-family:'Poppins',sans-serif;font-weight:700}
+  .site-sub{font-size:13px;color:var(--muted)}
+
+  /* nav */
+  .main-nav{display:flex;gap:8px;align-items:center;position:relative;padding:6px}
+  .nav-link{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;color:var(--muted);text-decoration:none;font-family:'Poppins',sans-serif;font-weight:600;transition:all .16s}
+  .nav-link:hover{background:var(--glass);transform:translateY(-3px);color:#052233}
+  .nav-link.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--white) !important;box-shadow:var(--shadow);transform:none}
+  #nav-indicator{position:absolute;bottom:-8px;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:left .22s ease,width .22s ease;box-shadow:0 10px 30px rgba(11,99,165,0.14);pointer-events:none}
+
+  /* actions */
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .btn-cta{background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--white);padding:9px 12px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+
+  /* mobile */
+  .nav-toggle{display:none;background:transparent;border:0;font-size:20px;padding:8px;cursor:pointer}
+  @media (max-width:880px){
+    .nav-wrap{padding:10px}
+    .main-nav{position:fixed;left:8px;right:8px;top:72px;background:rgba(255,255,255,0.98);flex-direction:column;gap:6px;padding:12px;border-radius:10px;box-shadow:0 14px 30px rgba(6,20,40,0.06);transform:translateY(-8px);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s}
+    .main-nav.open{opacity:1;transform:translateY(0);pointer-events:auto}
+    .nav-toggle{display:inline-flex}
+    #nav-indicator{display:none}
+    .nav-link{width:calc(100% - 28px)}
+    .nav-actions{display:flex}
+  }
+
+  /* accessibility focus */
+  .nav-link:focus{outline:0;box-shadow:0 0 0 6px rgba(11,99,165,0.12)}
+</style>
+
+<script>
+(function(){
+  const nav = document.getElementById('main-nav');
+  const links = Array.from(nav.querySelectorAll('.nav-link'));
+  const indicator = document.getElementById('nav-indicator');
+  const toggle = document.getElementById('nav-toggle');
+  const loginBtn = document.getElementById('login-btn');
+
+  // Determine and set active link by current file or hash
+  function setActiveByLocation(){
+    const filename = (location.pathname || '').split('/').pop().toLowerCase() || 'home.html';
+    const fileBase = filename.replace(/\.html$/,'');
+    const hash = (location.hash || '').replace('#','').toLowerCase();
+
+    // clear
+    links.forEach(a => { a.classList.remove('active'); a.removeAttribute('aria-current'); });
+
+    // match by href filename
+    let match = links.find(a => {
+      const href = (a.getAttribute('href')||'').split('/').pop().toLowerCase();
+      if(!href) return false;
+      if(href === filename) return true;
+      if(href.replace(/\.html$/,'') === fileBase) return true;
+      return false;
+    });
+
+    // if hash present, prefer matching data-nav or hash target
+    if(hash){
+      const hashMatch = links.find(a => (a.dataset && a.dataset.nav && a.dataset.nav.toLowerCase() === hash) || ((a.getAttribute('href')||'').split('#').pop().toLowerCase() === hash));
+      if(hashMatch) match = hashMatch;
+    }
+
+    if(!match) match = links[0];
+    if(match){
+      match.classList.add('active');
+      match.setAttribute('aria-current','page');
+      moveIndicator(match);
+    }
+  }
+
+  // Move sliding indicator under element
+  function moveIndicator(el){
+    if(!indicator) return;
+    const r = el.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+    const left = r.left - navRect.left;
+    const width = r.width;
+    indicator.style.left = (left + 8) + 'px';
+    indicator.style.width = (width - 16) + 'px';
+  }
+
+  // Click behavior: for links to same-page anchors (#id) do smooth scroll
+  links.forEach(a => {
+    a.addEventListener('click', function(e){
+      // close mobile nav if open
+      if(nav.classList.contains('open')){ nav.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
+
+      // smooth-scroll if link contains a hash pointing to element on same page
+      const href = a.getAttribute('href') || '';
+      if(href.startsWith('#')){
+        e.preventDefault();
+        const id = href.slice(1);
+        const el = document.getElementById(id);
+        if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+        // set active visually
+        links.forEach(x => x.classList.remove('active'));
+        a.classList.add('active');
+        a.setAttribute('aria-current','page');
+        return;
+      }
+      // otherwise allow default (navigate or your injector will handle)
+    });
+
+    // keyboard activation
+    a.addEventListener('keydown', (ev) => { if(ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); a.click(); } });
+  });
+
+  // toggle mobile menu
+  toggle && toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  // ensure indicator repositions on resize/scroll
+  let t;
+  window.addEventListener('resize', ()=>{ clearTimeout(t); t=setTimeout(()=> { const active = nav.querySelector('.nav-link.active'); if(active) moveIndicator(active); }, 100); });
+  window.addEventListener('scroll', ()=> { const active = nav.querySelector('.nav-link.active'); if(active) moveIndicator(active); }, { passive:true });
+
+  // login button goes to booking page
+  loginBtn && loginBtn.addEventListener('click', ()=> { location.href = 'customer.html'; });
+
+  // initial set
+  setActiveByLocation();
+
+  // respond to history/hash changes
+  window.addEventListener('popstate', setActiveByLocation);
+  window.addEventListener('hashchange', setActiveByLocation);
+
+  // Expose hook for page scripts (optional): window.onNavReady = function(){ ... }
+  window.onNavReady = function(){ setActiveByLocation(); };
+
+  // SAFETY: prevent negative distance inputs anywhere on site
+  (function clampDistanceInputs(){
+    try{
+      const binds = (selector) => {
+        const els = Array.from(document.querySelectorAll(selector));
+        els.forEach(d => {
+          d.setAttribute('min', '0');
+          d.addEventListener('input', ()=> { if(Number(d.value) < 0) d.value = 0; });
+        });
+      };
+      // common id used in your pages
+      binds('#distance');
+      // also clamp any inputs that have data-distance attribute
+      binds('input[data-distance]');
+    }catch(e){ /* ignore */ }
+  })();
+
+})();
+</script>
+<!-- END: SHARED NAV -->
+
+
+
+
+  
+
+  <div class="wrap">
+
+    <!-- NAV removed as requested -->
+
+    <!-- HERO -->
+    <section class="hero fade-in" aria-labelledby="about-hero">
+      <div>
+        <h1 id="about-hero">Who we are — Pilot Travels</h1>
+        <p>We are a local taxi & rental company based in Nagercoil. Our mission is to give safe, comfortable and affordable travel with verified drivers and transparent pricing. We make local and outstation trips easy — tailored to families, friends and solo travellers alike.</p>
+      </div>
+
+      <aside>
+        <div class="card">
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="avatar"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&q=80&auto=format&fit=crop" alt="Founder"></div>
+            <div>
+              <div style="font-weight:800">Pilot Travels</div>
+              <div class="small" style="color:var(--muted)">Trusted since 2014</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <strong>Contact</strong>
+          <div class="small" style="color:var(--muted);margin-top:6px">WhatsApp: <a href="https://wa.me/919488336297">9488336297</a></div>
+          <div class="small" style="margin-top:6px">Email: <a href="mailto:pilottravels74@gmail.com">pilottravels74@gmail.com</a></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- STORY / TIMELINE -->
+    <section class="section">
+      <h2>Our story</h2>
+      <p class="small" style="color:var(--muted)">Started as a small local taxi provider, Pilot Travels has grown with the community's trust. We focus on safety, reliability and a personal touch.</p>
+
+      <div class="timeline" style="margin-top:12px">
+        <div class="event">
+          <strong>2014 — Founded</strong>
+          <div class="small" style="color:var(--muted);margin-top:6px">Started with two cars serving local trips around Nagercoil.</div>
+        </div>
+        <div class="event">
+          <strong>2017 — Expanded fleet</strong>
+          <div class="small" style="color:var(--muted);margin-top:6px">Introduced family vans and day packages for tourists.</div>
+        </div>
+        <div class="event">
+          <strong>2021 — Digital bookings</strong>
+          <div class="small" style="color:var(--muted);margin-top:6px">Launched easy online booking & 24/7 support.</div>
+        </div>
+        <div class="event">
+          <strong>Today</strong>
+          <div class="small" style="color:var(--muted);margin-top:6px">Serving thousands of happy trips with integrity.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="section">
+      <h2>Meet the team</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
+        <div class="card team fade-in" style="display:flex;gap:12px;align-items:center">
+          <div class="avatar"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&q=80&auto=format&fit=crop" alt="Founder"></div>
+          <div>
+            <div style="font-weight:800">R. Alen Reginald</div>
+            <div class="small" style="color:var(--muted)">Founder & Operations</div>
+            <div class="small" style="margin-top:8px;color:var(--muted)">Local entrepreneur focused on quality and safety.</div>
+          </div>
+        </div>
+
+        <div class="card fade-in">
+          <strong>Operations</strong>
+          <div class="small" style="color:var(--muted);margin-top:8px">Scheduling, fleet maintenance, driver training.</div>
+        </div>
+
+        <div class="card fade-in">
+          <strong>Customer support</strong>
+          <div class="small" style="color:var(--muted);margin-top:8px">24/7 help via phone & WhatsApp for fast assistance.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES HIGHLIGHTS -->
+    <section class="section">
+      <h2>What we offer</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
+        <div class="card">
+          <strong>Airport Transfers</strong>
+          <div class="small" style="color:var(--muted);margin-top:8px">Punctual pick up and safe drop at airports.</div>
+        </div>
+
+        <div class="card">
+          <strong>Day Tours & Sightseeing</strong>
+          <div class="small" style="color:var(--muted);margin-top:8px">Customized local tours for families and groups.</div>
+        </div>
+
+        <div class="card">
+          <strong>Hourly Rentals</strong>
+          <div class="small" style="color:var(--muted);margin-top:8px">Flexible hourly plans for errands or work.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROMO / CTA -->
+    <section class="promo">
+      <div class="left">
+        <div style="font-weight:800">Ready to travel?</div>
+        <div class="small" style="color:var(--muted);margin-top:6px">Book now and get a friendly, reliable driver for your next trip.</div>
+      </div>
+      <div>
+        <button class="btn" onclick="location.href='customer.html'">Book a car</button>
+      </div>
+    </section>
+
+    <footer style="margin-top:26px;color:var(--muted);text-align:center">© Pilot Travels · Nagercoil · <a href="contact.html">Contact Us</a></footer>
+  </div>
+
+  <!-- Modal (shared small login/CTA) -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div id="modalRoot" class="modal" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <script>
+    // theme: sync with other pages
+    const themeKey = 'theme_v2';
+    function setTheme(t){ document.documentElement.setAttribute('data-theme', t); localStorage.setItem(themeKey, t); }
+    (function(){ const saved = localStorage.getItem(themeKey) || (window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'); setTheme(saved); })();
+
+    // Note: nav.html initializer will set up #theme-toggle handler; if nav fails to load, ensure theme toggle doesn't throw:
+    (function safeThemeToggle(){
+      const toggle = document.getElementById('theme-toggle');
+      if(toggle) toggle.addEventListener('click', ()=> setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+    })();
+
+    // When nav is present, make About link active (nav.html's script may already do this)
+    function setAboutActive(){
+      const navLinks = document.querySelectorAll('#nav-placeholder nav.primary a, header .nav-links a, header nav a');
+      navLinks.forEach(a => a.classList.remove('active'));
+      const about = Array.from(navLinks).find(a => a.getAttribute('href') && a.getAttribute('href').includes('about'));
+      if(about) about.classList.add('active');
+    }
+    // run after small delay so injected nav finishes
+    setTimeout(setAboutActive, 250);
+
+    // Simple modal & login (keeps consistent with other pages)
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalRoot = document.getElementById('modalRoot');
+    function openModal(html){
+      modalRoot.innerHTML = html;
+      modalBackdrop.style.display = 'flex';
+      modalBackdrop.setAttribute('aria-hidden','false');
+      modalRoot.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', closeModal));
+      modalBackdrop.addEventListener('click', backdropHandler);
+    }
+    function closeModal(){ modalBackdrop.style.display='none'; modalRoot.innerHTML=''; modalBackdrop.setAttribute('aria-hidden','true'); modalBackdrop.removeEventListener('click', backdropHandler); }
+    function backdropHandler(e){ if(e.target === modalBackdrop) closeModal(); }
+
+    // Login button (works even if nav was injected or fallback)
+    (function bindLogin(){
+      // try to attach multiple times in case nav loads later
+      function attach(){
+        const btn = document.getElementById('login-btn') || document.querySelector('button.btn');
+        if(btn){
+          btn.addEventListener('click', ()=> {
+            openModal(`<div style="display:flex;justify-content:space-between;align-items:center"><h3>Login</h3><button class="modal-close">Close</button></div><div style="margin-top:12px"><label>Email</label><input id="loginEmail" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"/><label style="margin-top:8px">Password</label><input id="loginPass" type="password" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"/><div style="margin-top:12px;display:flex;gap:8px"><button id="doLogin" class="btn">Login</button><button class="btn-ghost modal-close">Cancel</button></div></div>`);
+            modalRoot.querySelector('#doLogin')?.addEventListener('click', ()=> { closeModal(); alert('Demo login — return to Home to book'); });
+          }, { once: true });
+          return true;
+        }
+        return false;
+      }
+      // try immediately and a few times if nav loads slightly later
+      if(!attach()){
+        const tries = setInterval(()=>{ if(attach()) clearInterval(tries); }, 200);
+        setTimeout(()=> clearInterval(tries), 4000);
+      }
+    })();
+
+    // Simple accessibility: close on ESC
+    document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+
+    // small animation trigger for visible elements (stagger appearance)
+    const animated = document.querySelectorAll('.fade-in, .card, .mini-card');
+    animated.forEach((el, i) => { el.style.animationDelay = `${0.07 * i}s`; el.classList.add('fade-in'); });
+  </script>
+</body>
+</html>
